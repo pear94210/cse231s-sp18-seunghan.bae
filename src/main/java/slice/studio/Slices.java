@@ -53,7 +53,25 @@ public class Slices {
 	 * @return the created list of slices
 	 */
 	private static <T> List<Slice<T>> createNSlicesForArrayObject(T data, int numSlices) {
-		throw new NotYetImplementedException();
+		List<Slice<T>> list = new ArrayList<Slice<T>>();
+		
+		int totalLength = Array.getLength(data);
+		int sliceLength = totalLength / numSlices;
+		int remainder = totalLength % numSlices;
+		int index = 0;
+		int min = 0;
+		int max = 0;
+		
+		for (int i = 0; i < numSlices; i++) {
+			max = min + sliceLength + (index < remainder ? 1 : 0);
+			Slice<T> slice = new Slice<T>(data, index, min, max);
+			list.add(slice);
+			
+			index++;
+			min = max;
+		}
+		
+		return list;
 	}
 
 	public static <T> List<Slice<T[]>> createNSlices(T[] data, int numSlices) {

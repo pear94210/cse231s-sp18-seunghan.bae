@@ -141,18 +141,20 @@ public class NucleobaseCounting {
 			throws InterruptedException, ExecutionException {
 		int subCount[] = new int[numTasks];
 		int interval = chromosome.length / numTasks;
-		int firstInterval = interval + (chromosome.length % numTasks);
+		int remainder = chromosome.length % numTasks;
 		
 		finish(() -> {
 			int min = 0;
+			int taskCount = 0;
 			for (int taskIndex : new IntegerRange(0, numTasks)) {
-				int max = min + (min == 0 ? firstInterval : interval);
+				int max = min + interval + (taskCount < remainder ? 1 : 0);
 				final int _min = min;
 				
 				async(() -> {
 					subCount[taskIndex] = countRangeSequential(chromosome, targetNucleobase, _min, max);
 				});
 				
+				taskCount++;
 				min = max;
 			}
 		});
