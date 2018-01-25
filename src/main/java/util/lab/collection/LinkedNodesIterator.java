@@ -28,15 +28,19 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import net.jcip.annotations.NotThreadSafe;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @NotThreadSafe
 /* package-private */ class LinkedNodesIterator<E> implements Iterator<E> {
-
+	
+	private LinkedNode<E> prev, curr, next;
+	
 	public LinkedNodesIterator(LinkedNodesCollection<E> collection) {
-		throw new NotYetImplementedException();
+		this.prev = collection.getHeadNode();
+		this.curr = prev.getNext();
+		this.next = curr.getNext();
 	}
 
 	/**
@@ -44,7 +48,7 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public boolean hasNext() {
-		throw new NotYetImplementedException();
+		return (this.next != null);
 	}
 
 	/**
@@ -52,7 +56,15 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public E next() {
-		throw new NotYetImplementedException();
+		if (this.hasNext()) {
+			this.prev = this.curr;
+			this.curr = this.next;
+			this.next = this.next.getNext();
+			return this.curr.getValue();
+		}
+		else {
+			throw new NoSuchElementException();
+		}
 	}
 
 	/**
@@ -60,6 +72,11 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public void remove() {
-		throw new NotYetImplementedException();
+		while (this.hasNext()) {
+			this.next();
+		}
+		this.prev.setNext(new LinkedNode<E>(null, null));
+		this.curr = null;
+		this.next = null;
 	}
 }

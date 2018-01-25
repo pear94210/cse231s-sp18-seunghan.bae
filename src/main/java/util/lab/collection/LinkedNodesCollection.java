@@ -29,7 +29,7 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import net.jcip.annotations.NotThreadSafe;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
@@ -57,7 +57,7 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 */
 	@Override
 	public Iterator<E> iterator() {
-		throw new NotYetImplementedException();
+		return new LinkedNodesIterator<E>(this);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		return this.size;
 	}
 
 	/**
@@ -75,7 +75,10 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 */
 	@Override
 	public boolean add(E item) {
-		throw new NotYetImplementedException();
+		LinkedNode<E> newNode = new LinkedNode<E>(item, this.head.getNext());
+		this.head.setNext(newNode);
+		this.size++;
+		return true;
 	}
 
 	/* package-private */ LinkedNode<E> getHeadNode() {
