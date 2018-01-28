@@ -35,11 +35,15 @@ import net.jcip.annotations.NotThreadSafe;
 @NotThreadSafe
 /* package-private */ class LinkedNodesIterator<E> implements Iterator<E> {
 	
+	private final LinkedNodesCollection<E> collection;
 	private LinkedNode<E> prev, curr;
+	private boolean removable;
 	
 	public LinkedNodesIterator(LinkedNodesCollection<E> collection) {
-		this.prev = collection.getHeadNode();
-		this.curr = prev.getNext();
+		this.collection = collection;
+		this.prev = null;
+		this.curr = collection.getHeadNode();
+		this.removable = false;
 	}
 
 	/**
@@ -58,11 +62,10 @@ import net.jcip.annotations.NotThreadSafe;
 		if (this.hasNext()) {
 			this.prev = this.curr;
 			this.curr = this.curr.getNext();
+			this.removable = true;
 			return this.curr.getValue();
 		}
-		else {
-			throw new NoSuchElementException();
-		}
+		else throw new NoSuchElementException();
 	}
 
 	/**
@@ -70,6 +73,12 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public void remove() {
-		this.prev.setNext(this.curr.getNext());
+		if (this.removable) {
+			this.prev.setNext(this.curr.getNext());
+			this.collection.decrementSize();
+			this.removable = false;
+		}
+		else throw new IllegalStateException();
+		
 	}
 }

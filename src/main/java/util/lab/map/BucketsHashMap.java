@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.iterators.LazyIteratorChain;
 
@@ -36,7 +37,7 @@ import net.jcip.annotations.NotThreadSafe;
 import util.lab.collection.LinkedNodesCollection;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
@@ -72,7 +73,11 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 * @return the index of the bucket the entry should go into
 	 */
 	private int hash(Object key) {
-		throw new NotYetImplementedException();
+		int hash = key.hashCode() % buckets.length;
+		if (hash >= 0) {
+			return hash;
+		}
+		else return hash + buckets.length;
 	}
 
 	/**
@@ -82,7 +87,7 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 * @return the bucket the key is in
 	 */
 	private Collection<Entry<K, V>> getBucketFor(Object key) {
-		throw new NotYetImplementedException();
+		return buckets[hash(key)];
 	}
 
 	/**
@@ -90,7 +95,11 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		int size = 0;
+		for (int i = 0; i < buckets.length; ++i) {
+			size += buckets[i].size();
+		}
+		return size;
 	}
 
 	/**
@@ -98,7 +107,19 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V put(K key, V value) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K, V>> entries = getBucketFor(key);
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			if (entry.getKey().equals(key)) {
+				V prevVal = entry.getValue();
+				entry.setValue(value);
+				return prevVal;
+			}
+		}
+		Entry<K, V> newEntry = new KeyMutableValuePair<K, V>(key, value);
+		entries.add(newEntry);
+		return null;
 	}
 
 	/**
@@ -106,7 +127,16 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V remove(Object key) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K, V>> entries = getBucketFor(key);
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			if (entry.getKey().equals(key)) {
+				iter.remove();
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -114,7 +144,16 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V get(Object key) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K, V>> entries = getBucketFor(key);
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			entry.getValue();
+			if (entry.getKey().equals(key)) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**

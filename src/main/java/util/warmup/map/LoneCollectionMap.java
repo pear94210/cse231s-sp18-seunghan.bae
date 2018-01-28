@@ -33,7 +33,7 @@ import net.jcip.annotations.NotThreadSafe;
 import util.lab.collection.LinkedNodesCollection;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
@@ -57,7 +57,7 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		return entries.size();
 	}
 
 	/**
@@ -65,7 +65,18 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V put(K key, V value) {
-		throw new NotYetImplementedException();
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			if (entry.getKey().equals(key)) {
+				V prevVal = entry.getValue();
+				entry.setValue(value);
+				return prevVal;
+			}
+		}
+		Entry<K, V> newEntry = new KeyMutableValuePair<K, V>(key, value);
+		entries.add(newEntry);
+		return null;
 	}
 
 	/**
@@ -73,7 +84,15 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V remove(Object key) {
-		throw new NotYetImplementedException();
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			if (entry.getKey().equals(key)) {
+				iter.remove();
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -81,7 +100,15 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V get(Object key) {
-		throw new NotYetImplementedException();
+		Iterator<Entry<K, V>> iter = entries.iterator();
+		while (iter.hasNext()) {
+			Entry<K, V> entry = iter.next();
+			entry.getValue();
+			if (entry.getKey().equals(key)) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
