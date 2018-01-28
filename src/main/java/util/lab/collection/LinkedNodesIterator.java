@@ -35,12 +35,11 @@ import net.jcip.annotations.NotThreadSafe;
 @NotThreadSafe
 /* package-private */ class LinkedNodesIterator<E> implements Iterator<E> {
 	
-	private LinkedNode<E> prev, curr, next;
+	private LinkedNode<E> prev, curr;
 	
 	public LinkedNodesIterator(LinkedNodesCollection<E> collection) {
 		this.prev = collection.getHeadNode();
 		this.curr = prev.getNext();
-		this.next = curr.getNext();
 	}
 
 	/**
@@ -48,7 +47,7 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public boolean hasNext() {
-		return (this.next != null);
+		return (this.curr.getNext() != null);
 	}
 
 	/**
@@ -58,8 +57,7 @@ import net.jcip.annotations.NotThreadSafe;
 	public E next() {
 		if (this.hasNext()) {
 			this.prev = this.curr;
-			this.curr = this.next;
-			this.next = this.next.getNext();
+			this.curr = this.curr.getNext();
 			return this.curr.getValue();
 		}
 		else {
@@ -72,11 +70,6 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public void remove() {
-		while (this.hasNext()) {
-			this.next();
-		}
-		this.prev.setNext(new LinkedNode<E>(null, null));
-		this.curr = null;
-		this.next = null;
+		this.prev.setNext(this.curr.getNext());
 	}
 }
