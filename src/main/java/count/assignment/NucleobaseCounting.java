@@ -220,7 +220,7 @@ public class NucleobaseCounting {
 		int subCount[] = { 0, 0 };
 		
 		finish(() -> {
-			if (mid - min >= threshold) {
+			if (maxExclusive - min >= threshold) {
 				async(() -> {
 					subCount[0] = countParallelDivideAndConquerKernel(chromosome, targetNucleobase, threshold, min, mid);
 				});
