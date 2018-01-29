@@ -79,6 +79,5 @@ import net.jcip.annotations.NotThreadSafe;
 			this.removable = false;
 		}
 		else throw new IllegalStateException();
-		
 	}
 }
