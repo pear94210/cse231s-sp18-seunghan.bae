@@ -27,6 +27,7 @@ import static edu.wustl.cse231s.v5.V5.finish;
 import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import midpoint.assignment.MidpointUtils;
 import sort.core.merge.Combiner;
 
 /**
@@ -49,7 +50,13 @@ public class MergeSort {
 	 */
 	private static void sequentialMergeSortKernel(int[] data, int lowInclusive, int highExclusive, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		if (highExclusive - lowInclusive <= 1) return;
+		else {
+			int mid = MidpointUtils.calculateMidpoint (lowInclusive, highExclusive);
+			sequentialMergeSortKernel(data, lowInclusive, mid, combiner);
+			sequentialMergeSortKernel(data, mid, highExclusive, combiner);
+			combiner.combineRange(data, lowInclusive, mid, highExclusive);
+		}
 	}
 
 	/**
@@ -62,7 +69,7 @@ public class MergeSort {
 	 */
 	public static void sequentialMergeSort(int[] data, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		sequentialMergeSortKernel(data, 0, data.length, combiner);
 	}
 
 	/**
@@ -86,7 +93,17 @@ public class MergeSort {
 	 */
 	private static void parallelMergeSortKernel(int[] data, int lowInclusive, int highExclusive, int threshold,
 			Combiner combiner) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		if (highExclusive - lowInclusive < threshold) {
+			sequentialMergeSortKernel(data, lowInclusive, highExclusive, combiner);
+		}
+		else {
+			int mid = MidpointUtils.calculateMidpoint (lowInclusive, highExclusive);
+			finish(() -> {
+				async(() -> sequentialMergeSortKernel(data, lowInclusive, mid, combiner));
+				sequentialMergeSortKernel(data, mid, highExclusive, combiner);
+			});
+			combiner.combineRange(data, lowInclusive, mid, highExclusive);
+		}
 	}
 
 	/**
@@ -102,6 +119,6 @@ public class MergeSort {
 	 */
 	public static void parallelMergeSort(int[] data, int threshold, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		parallelMergeSortKernel(data, 0, data.length, threshold, combiner);
 	}
 }
