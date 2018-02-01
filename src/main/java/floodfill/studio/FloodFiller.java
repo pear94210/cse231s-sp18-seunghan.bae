@@ -31,7 +31,7 @@ import edu.wustl.cse231s.pixels.MutablePixels;
 import javafx.scene.paint.Color;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class FloodFiller {
@@ -52,7 +52,14 @@ public class FloodFiller {
 	 *            The y-coordinate of the pixel to examine.
 	 */
 	private static void floodFillKernel(MutablePixels mutablePixels, Color prevColor, Color nextColor, int x, int y) {
-		throw new NotYetImplementedException();
+		if (mutablePixels.isInBounds(x, y) && mutablePixels.getColor(x, y).equals(prevColor)) {
+			mutablePixels.setColor(x, y, nextColor);
+			async(() -> floodFillKernel(mutablePixels, prevColor, nextColor, x + 1, y));
+			async(() -> floodFillKernel(mutablePixels, prevColor, nextColor, x, y + 1));
+			async(() -> floodFillKernel(mutablePixels, prevColor, nextColor, x - 1, y));
+			floodFillKernel(mutablePixels, prevColor, nextColor, x, y - 1);
+		}
+		else return;
 	}
 
 	/**
