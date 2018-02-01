@@ -24,6 +24,7 @@ package floodfill.studio;
 import static edu.wustl.cse231s.v5.V5.async;
 import static edu.wustl.cse231s.v5.V5.finish;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
@@ -52,7 +53,7 @@ public class FloodFiller {
 	 *            The y-coordinate of the pixel to examine.
 	 */
 	private static void floodFillKernel(MutablePixels mutablePixels, Color prevColor, Color nextColor, int x, int y) {
-		if (mutablePixels.isInBounds(x, y) && mutablePixels.getColor(x, y).equals(prevColor)) {
+		if (mutablePixels.isInBounds(x, y) && Objects.equals(mutablePixels.getColor(x, y), prevColor)) {
 			mutablePixels.setColor(x, y, nextColor);
 			async(() -> floodFillKernel(mutablePixels, prevColor, nextColor, x + 1, y));
 			async(() -> floodFillKernel(mutablePixels, prevColor, nextColor, x, y + 1));
