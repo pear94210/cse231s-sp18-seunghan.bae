@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import midpoint.assignment.MidpointUtils;
 import sort.core.merge.Combiner;
 
 /**
@@ -61,7 +62,35 @@ public class ParallelCombiner implements Combiner {
 
 	private void parallelCombine(int bufferIndex, int[] data, int aMin, int aMaxExclusive, int bMin, int bMaxExclusive)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		boolean aIsLonger = (aMaxExclusive - aMin) >= (bMaxExclusive - bMin);
+		if (aIsLonger) {
+			if (aMaxExclusive - aMin < this.threshold) {
+				sequentialCombine(bufferIndex, data, aMin, aMaxExclusive, bMin, bMaxExclusive);
+			}
+			else {
+				int aMid = MidpointUtils.calculateMidpoint(aMin, aMaxExclusive);
+				int bLoc = binarySearch(data, bMin, bMaxExclusive, aMid);
+				//async(() -> parallelCombine(bufferIndex, ));
+			}
+		}
+		else {
+			
+		}
+	}
+	
+	private int binarySearch(int[] data, int min, int maxExclusive, int index) {
+		int pivot = MidpointUtils.calculateMidpoint(min, maxExclusive);
+		if (data[index] < data[min]) return 0;
+		else if (data[index] >= data[maxExclusive - 1]) return maxExclusive - min;
+		else {
+			if ((data[index] < data[pivot]) && (data[index] < data[pivot + 1])) {
+				return binarySearch(data, min, pivot + 1, index);
+			}
+			else if ((data[index] >= data[pivot]) && (data[index] >= data[pivot + 1])) {
+				return binarySearch(data, pivot + 1, maxExclusive, index);
+			}
+			else return pivot - min + 1;
+		}
 	}
 
 	@Override
