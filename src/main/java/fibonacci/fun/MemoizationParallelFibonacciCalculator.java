@@ -42,7 +42,26 @@ public class MemoizationParallelFibonacciCalculator implements FibonacciCalculat
 		// TODO: implement fibonacci with Future<BigInteger> memos
 			// check out PascalsTriangleWithFuture for an example
 			// https://www.cs.rice.edu/~vs3/hjlib/code/course-materials/demo-files/PascalsTriangleWithFuture.java
-			throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		Future<BigInteger>[] memos = new Future[n + 1];
+		for (int i = 0; i < memos.length; i++) {
+			final int index = i;
+			memos[index] = future(() -> {
+				if (index == 0) return BigInteger.ZERO;
+				else if (index == 1) return BigInteger.ONE;
+				else {
+					Future<BigInteger> memo1 = memos[index - 1];
+					Future<BigInteger> memo2 = memos[index - 2];
+					
+					BigInteger int1 = memo1.get();
+					BigInteger int2 = memo2.get();
+					return int1.add(int2);
+				}
+			});
+		}
+		
+		BigInteger ans = memos[n].get();
+		return ans;
 	}
 
 	@Override

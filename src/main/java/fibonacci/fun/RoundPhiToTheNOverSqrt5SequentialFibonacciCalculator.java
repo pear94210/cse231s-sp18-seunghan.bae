@@ -37,7 +37,7 @@ import fibonacci.core.FibonacciCalculator;
 public class RoundPhiToTheNOverSqrt5SequentialFibonacciCalculator implements FibonacciCalculator {
 	@Override
 	public BigInteger fibonacci(int n) {
-		throw new NotYetImplementedException();
+		return BigInteger.valueOf(Math.round(Math.pow(GoldenRatioUtils.PHI, n) / Math.sqrt(5)));
 	}
 
 	@Override

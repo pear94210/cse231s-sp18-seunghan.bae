@@ -35,7 +35,10 @@ import fibonacci.core.FibonacciCalculator;
  */
 public class DynamicRecursiveSequentialFibonacciCalculator implements FibonacciCalculator {
 	private BigInteger fibonacciKernel(BigInteger a, BigInteger b, int n) {
-		throw new NotYetImplementedException();
+		if (n == 0) return a;
+		else {
+			return fibonacciKernel(b, a.add(b), n - 1);
+		}
 	}
 
 	@Override
