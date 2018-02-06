@@ -62,7 +62,7 @@ public class ParallelCombiner implements Combiner {
 
 	private void parallelCombine(int bufferIndex, int[] data, int aMin, int aMaxExclusive, int bMin, int bMaxExclusive)
 			throws InterruptedException, ExecutionException {
-		boolean aIsLonger = (aMaxExclusive - aMin) >= (bMaxExclusive - bMin);
+		/*boolean aIsLonger = (aMaxExclusive - aMin) >= (bMaxExclusive - bMin);
 		if (aIsLonger) {
 			if (aMaxExclusive - aMin < this.threshold) {
 				sequentialCombine(bufferIndex, data, aMin, aMaxExclusive, bMin, bMaxExclusive);
@@ -75,7 +75,8 @@ public class ParallelCombiner implements Combiner {
 		}
 		else {
 			
-		}
+		}*/
+		throw new NotYetImplementedException();
 	}
 	
 	private int binarySearch(int[] data, int min, int maxExclusive, int index) {
