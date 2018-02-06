@@ -36,7 +36,22 @@ import fibonacci.core.FibonacciCalculator;
 public class LinearRecurrenceSequentialFibonacciCalculator implements FibonacciCalculator {
 	@Override
 	public BigInteger fibonacci(int n) {
-		throw new NotYetImplementedException();
+		if (n <= 0) return BigInteger.ZERO;
+		else if (n == 1) return BigInteger.ONE;
+		else {
+			if (n % 2 == 0) {
+				int k = n / 2;
+				BigInteger term1 = fibonacci(k - 1);
+				BigInteger term2 = fibonacci(k);
+				return term1.multiply(BigInteger.TWO).add(term2).multiply(term2);
+			}
+			else {
+				int k = (n + 1) / 2;
+				BigInteger term1 = fibonacci(k - 1);
+				BigInteger term2 = fibonacci(k);
+				return term2.multiply(term2).add(term1.multiply(term1));
+			}
+		}
 	}
 
 	@Override

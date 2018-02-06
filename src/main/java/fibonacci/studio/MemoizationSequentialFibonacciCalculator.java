@@ -35,7 +35,14 @@ import fibonacci.core.FibonacciCalculator;
  */
 public class MemoizationSequentialFibonacciCalculator implements FibonacciCalculator {
 	private BigInteger fibonacciMemo(BigInteger[] memos, int n) {
-		throw new NotYetImplementedException();
+		memos[0] = BigInteger.ZERO;
+		if (n >= 1) memos[1] = BigInteger.ONE;
+		if (n >= 2) {
+			for (int i = 2; i <= n; i++) {
+				memos[i] = memos[i - 2].add(memos[i - 1]);
+			}
+		}
+		return memos[n];
 	}
 
 	@Override

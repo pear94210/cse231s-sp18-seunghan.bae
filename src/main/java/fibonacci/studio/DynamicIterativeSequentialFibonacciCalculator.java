@@ -36,7 +36,18 @@ import fibonacci.core.FibonacciCalculator;
 public class DynamicIterativeSequentialFibonacciCalculator implements FibonacciCalculator {
 	@Override
 	public BigInteger fibonacci(int n) {
-		throw new NotYetImplementedException();
+		BigInteger a = BigInteger.ZERO;
+		BigInteger b = BigInteger.ONE;
+		
+		if (n == 0) return a;
+		else {
+			for (int i = 0; i < n; i++) {
+				BigInteger temp = a.add(b);
+				a = b;
+				b = temp;
+			}
+			return a;
+		}
 	}
 
 	@Override

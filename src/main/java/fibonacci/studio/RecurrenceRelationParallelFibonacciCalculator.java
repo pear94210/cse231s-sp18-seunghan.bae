@@ -40,7 +40,13 @@ public class RecurrenceRelationParallelFibonacciCalculator implements FibonacciC
 	@Override
 	public BigInteger fibonacci(int n) throws InterruptedException, ExecutionException {
 		doWork(1);
-		throw new NotYetImplementedException();
+		if (n <= 0) return BigInteger.ZERO;
+		else if (n == 1) return BigInteger.ONE;
+		else {
+			Future<BigInteger> fibTwo = future(() -> fibonacci(n - 2));
+			BigInteger fibOne = fibonacci(n - 1);
+			return fibOne.add(fibTwo.get());
+		}
 	}
 
 	@Override

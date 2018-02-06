@@ -37,7 +37,11 @@ public class RecurrenceRelationSequentialFibonacciCalculator implements Fibonacc
 	@Override
 	public BigInteger fibonacci(int n) {
 		doWork(1);
-		throw new NotYetImplementedException();
+		if (n <= 0) return BigInteger.ZERO;
+		else if (n == 1) return BigInteger.ONE;
+		else {
+			return fibonacci(n - 1).add(fibonacci(n - 2));
+		}
 	}
 
 	@Override
