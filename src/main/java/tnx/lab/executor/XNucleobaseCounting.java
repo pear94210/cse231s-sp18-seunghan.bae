@@ -22,6 +22,7 @@
 package tnx.lab.executor;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -76,6 +77,7 @@ public class XNucleobaseCounting {
 			return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, 0, mid);
 		});
 		int upperCount = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, mid, chromosome.length);
+		
 		return lowerCount.get() + upperCount;
 	}
 
@@ -104,10 +106,24 @@ public class XNucleobaseCounting {
 	 */
 	public static int countNWaySplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase, int numTasks)
 			throws InterruptedException, ExecutionException {
+		int count = 0;
 		List<Slice<byte[]>> chrSlices = Slices.createNSlices(chromosome, numTasks);
-		List<Callable<Byte>> callables = Arrays.asList(() -> {
-			
-		});
+		
+		List<Callable<Integer>> callables = new LinkedList<Callable<Integer>>();
+		for (Iterator<Slice<byte[]>> i = chrSlices.iterator(); i.hasNext(); ) {
+			Slice<byte[]> slice = i.next();
+			Callable<Integer> call = () -> {
+				return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, slice.getMinInclusive(), slice.getMaxExclusive());
+			};
+			callables.add(call);
+		}
+		
+		List<Future<Integer>> futures = executor.invokeAll(callables);
+		for (Iterator<Future<Integer>> i = futures.iterator(); i.hasNext(); ) {
+			count += i.next().get();
+		}
+		
+		return count;
 	}
 
 	/**
@@ -130,7 +146,7 @@ public class XNucleobaseCounting {
 	 */
 	public static int countDivideAndConquer(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase,
 			int threshold) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		return countDivideAndConquerKernel(executor, chromosome, nucleobase, 0, chromosome.length, threshold);
 	}
 
 	/**
@@ -162,6 +178,14 @@ public class XNucleobaseCounting {
 	 */
 	private static int countDivideAndConquerKernel(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase,
 			int min, int maxExclusive, int threshold) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int mid = MidpointUtils.calculateMidpoint(min, maxExclusive);
+		if (maxExclusive - min >= threshold) {
+			Future<Integer> lowerCount = executor.submit(() -> {
+				return countDivideAndConquerKernel(executor, chromosome, nucleobase, min, mid, threshold);
+			});
+			int upperCount = countDivideAndConquerKernel(executor, chromosome, nucleobase, mid, maxExclusive, threshold);
+			return lowerCount.get() + upperCount;
+		}
+		else return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, min, maxExclusive);
 	}
 }

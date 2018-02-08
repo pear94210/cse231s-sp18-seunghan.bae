@@ -57,7 +57,8 @@ public final class XQuicksort {
 	 */
 	public static void sequentialQuicksort(int[] data, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		sequentialQuicksortKernel(data, 0, data.length, partitioner);
+		return;
 	}
 
 	/**
@@ -93,7 +94,9 @@ public final class XQuicksort {
 	 */
 	public static void parallelQuicksort(ExecutorService executor, int[] data, int threshold, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Queue<Future<?>> futures = new ConcurrentLinkedQueue<>();
+		parallelQuicksortKernel(executor, data, 0, data.length, futures, threshold, partitioner);
+		return;
 	}
 
 	/**
