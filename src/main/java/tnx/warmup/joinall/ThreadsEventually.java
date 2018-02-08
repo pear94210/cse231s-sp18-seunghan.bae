@@ -52,9 +52,13 @@ public class ThreadsEventually {
 	 * @see java.util.Queue#poll()
 	 */
 	private static int joinAllInQueueViaPoll(Queue<Thread> queue) throws InterruptedException {
-		System.err.println("TODO: fix broken implementation of joinAllInQueueViaPoll");
-		int notLikelyToBeCorrectCount = ThreadsRightNow.joinAllInQueueViaIteration(queue);
-		return notLikelyToBeCorrectCount;
+		int count = 0;
+		while (!queue.isEmpty()) {
+			Thread head = queue.poll();
+			head.join();
+			count++;
+		}
+		return count;
 	}
 
 	public static int startAndJoin_brokenInitially_requiresFixing(int truthAndBeautyCount) throws InterruptedException {

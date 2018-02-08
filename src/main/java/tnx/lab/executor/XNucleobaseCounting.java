@@ -33,6 +33,7 @@ import count.assignment.NucleobaseCounting;
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.bioinformatics.Nucleobase;
+import midpoint.assignment.MidpointUtils;
 import slice.core.Slice;
 import slice.studio.Slices;
 
@@ -70,7 +71,12 @@ public class XNucleobaseCounting {
 	 */
 	public static int countLowerUpperSplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int mid = MidpointUtils.calculateMidpoint(0, chromosome.length);
+		Future<Integer> lowerCount = executor.submit(() -> {
+			return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, 0, mid);
+		});
+		int upperCount = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, mid, chromosome.length);
+		return lowerCount.get() + upperCount;
 	}
 
 	/**

@@ -24,6 +24,7 @@ package tnx.lab.thread;
 import java.util.concurrent.ThreadFactory;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import midpoint.assignment.MidpointUtils;
 
 /**
  * An parallel array sum implementation that uses Java's {@link Thread} class to
@@ -51,7 +52,17 @@ public class TAgeSum {
 	 *             if the current thread was interrupted while waiting
 	 */
 	public static int sumUpperLowerSplit(int[] ages, ThreadFactory threadFactory) throws InterruptedException {
-		throw new NotYetImplementedException();
+		int[] subSums = { 0, 0 };
+		int mid = MidpointUtils.calculateMidpoint(0, ages.length);
+		
+		Thread lowerSum = threadFactory.newThread(() -> {
+			for (int i = 0; i < mid; i++) subSums[0] += ages[i];
+		});
+		lowerSum.start();
+		for (int j = mid; j < ages.length; j++) subSums[1] += ages[j];
+		lowerSum.join();
+		
+		return subSums[0] + subSums[1];
 	}
 
 }

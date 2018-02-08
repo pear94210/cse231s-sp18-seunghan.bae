@@ -45,7 +45,7 @@ public class SimpleThreadFactory implements ThreadFactory {
 	 */
 	@Override
 	public Thread newThread(Runnable target) {
-		throw new NotYetImplementedException();
+		return new Thread(target);
 	}
 
 }
