@@ -43,7 +43,8 @@ public class LinearRecurrenceSequentialFibonacciCalculator implements FibonacciC
 				int k = n / 2;
 				BigInteger term1 = fibonacci(k - 1);
 				BigInteger term2 = fibonacci(k);
-				return term1.multiply(BigInteger.TWO).add(term2).multiply(term2);
+				BigInteger two = BigInteger.ONE.add(BigInteger.ONE);
+				return term1.multiply(two).add(term2).multiply(term2);
 			}
 			else {
 				int k = (n + 1) / 2;
