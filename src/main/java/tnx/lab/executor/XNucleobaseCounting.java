@@ -104,7 +104,10 @@ public class XNucleobaseCounting {
 	 */
 	public static int countNWaySplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase, int numTasks)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		List<Slice<byte[]>> chrSlices = Slices.createNSlices(chromosome, numTasks);
+		List<Callable<Byte>> callables = Arrays.asList(() -> {
+			
+		});
 	}
 
 	/**
