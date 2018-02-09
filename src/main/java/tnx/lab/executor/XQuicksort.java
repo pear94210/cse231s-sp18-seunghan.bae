@@ -76,7 +76,12 @@ public final class XQuicksort {
 	 */
 	private static void sequentialQuicksortKernel(int[] data, int min, int maxExclusive, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		if (maxExclusive - min <= 1) return;
+		else {
+			PivotLocation p = partitioner.partitionRange(data, min, maxExclusive);
+			sequentialQuicksortKernel(data, min, p.getLeftSidesUpperExclusive(), partitioner);
+			sequentialQuicksortKernel(data, p.getRightSidesLowerInclusive(), maxExclusive, partitioner);
+		}
 	}
 
 	/**
@@ -96,6 +101,7 @@ public final class XQuicksort {
 			throws InterruptedException, ExecutionException {
 		Queue<Future<?>> futures = new ConcurrentLinkedQueue<>();
 		parallelQuicksortKernel(executor, data, 0, data.length, futures, threshold, partitioner);
+		for (Future<?> f : futures) f.get();
 		return;
 	}
 
@@ -126,7 +132,23 @@ public final class XQuicksort {
 	private static void parallelQuicksortKernel(ExecutorService executor, int[] data, int min, int maxExclusive,
 			Queue<Future<?>> futures, int threshold, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		if (maxExclusive - min >= threshold) {
+			PivotLocation p = partitioner.partitionRange(data, min, maxExclusive);
+			Future<?> lowerSort = executor.submit(() -> {
+				try {
+					parallelQuicksortKernel(executor, data, min, p.getLeftSidesUpperExclusive(), futures, threshold, partitioner);
+				} catch (InterruptedException e) {
+					System.err.println("interrupted exception");
+				} catch (ExecutionException e) {
+					System.err.println("execution exception");
+				}
+			});
+			futures.offer(lowerSort);
+			parallelQuicksortKernel(executor, data, p.getRightSidesLowerInclusive(), maxExclusive, futures, threshold, partitioner);
+		}
+		else sequentialQuicksortKernel(data, min, maxExclusive, partitioner);
+		
+		return;
 	}
 
 }
