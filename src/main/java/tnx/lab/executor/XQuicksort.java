@@ -147,6 +147,7 @@ public final class XQuicksort {
 			parallelQuicksortKernel(executor, data, p.getRightSidesLowerInclusive(), maxExclusive, futures, threshold, partitioner);
 		}
 		else sequentialQuicksortKernel(data, min, maxExclusive, partitioner);
+		
 		return;
 	}
 
