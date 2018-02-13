@@ -41,13 +41,7 @@ public class SuspectWordCount {
 		finish(() -> {
 			for (String word : words) {
 				async(() -> {
-					Integer count = map.get(word);
-					if (count != null) {
-						count = count + 1;
-					} else {
-						count = 1;
-					}
-					map.put(word, count);
+					map.compute(word, (w, c) -> (c != null) ? c + 1 : 1);
 				});
 			}
 		});
