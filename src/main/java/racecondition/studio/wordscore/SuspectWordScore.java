@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 import racecondition.core.wordscore.WordScoreUtils;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class SuspectWordScore {
