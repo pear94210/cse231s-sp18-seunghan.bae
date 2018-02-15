@@ -45,7 +45,14 @@ public class ForallForallMatrixMultiplier implements MatrixMultiplier {
 		int n = a.length;
 		int m = b[0].length;
 		int p = a[0].length;
-		throw new NotYetImplementedException();
+		forall(0, n, (i) -> {
+			forall(0, m, (j) -> {
+				for (int k = 0; k < p; k++) {
+					result[i][j] += a[i][k] * b[k][j];
+				}
+			});
+		});
+		return result;
 	}
 
 	@Override
