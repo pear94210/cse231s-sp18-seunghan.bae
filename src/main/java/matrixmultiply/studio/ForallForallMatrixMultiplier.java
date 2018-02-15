@@ -30,7 +30,7 @@ import matrixmultiply.core.MatrixMultiplier;
 import matrixmultiply.core.MatrixUtils;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class ForallForallMatrixMultiplier implements MatrixMultiplier {
