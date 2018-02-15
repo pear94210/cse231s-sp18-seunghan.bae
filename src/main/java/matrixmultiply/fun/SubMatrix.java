@@ -159,7 +159,14 @@ public final class SubMatrix {
 			SubMatrix result22 = result.newSub22();
 
 			// https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm#Divide_and_conquer_algorithm
-			throw new NotYetImplementedException();
+			sequentialDivideAndConquerMultiplyKernel(a11, b11, result11);
+			sequentialDivideAndConquerMultiplyKernel(a12, b21, result11);
+			sequentialDivideAndConquerMultiplyKernel(a11, b12, result12);
+			sequentialDivideAndConquerMultiplyKernel(a12, b22, result12);
+			sequentialDivideAndConquerMultiplyKernel(a21, b11, result21);
+			sequentialDivideAndConquerMultiplyKernel(a22, b21, result21);
+			sequentialDivideAndConquerMultiplyKernel(a21, b12, result22);
+			sequentialDivideAndConquerMultiplyKernel(a22, b22, result22);
 		}
 	}
 
@@ -196,7 +203,7 @@ public final class SubMatrix {
 	 */
 	private static void parallelDivideAndConquerMultiplyKernel(SubMatrix a, SubMatrix b, SubMatrix result)
 			throws InterruptedException, ExecutionException {
-		final int SIZE_THRESHOLD = 64;
+		final int SIZE_THRESHOLD = 2;
 		if (result.size <= SIZE_THRESHOLD) {
 			sequentialDivideAndConquerMultiplyKernel(a, b, result);
 		} else {
@@ -215,7 +222,22 @@ public final class SubMatrix {
 			SubMatrix result21 = result.newSub21();
 			SubMatrix result22 = result.newSub22();
 
-			throw new NotYetImplementedException();
+			finish(() -> {
+				async(() -> {
+					parallelDivideAndConquerMultiplyKernel(a11, b11, result11);
+					parallelDivideAndConquerMultiplyKernel(a12, b21, result11);
+				});
+				async(() -> {
+					parallelDivideAndConquerMultiplyKernel(a11, b12, result12);
+					parallelDivideAndConquerMultiplyKernel(a12, b22, result12);
+				});
+				async(() -> {
+					parallelDivideAndConquerMultiplyKernel(a21, b11, result21);
+					parallelDivideAndConquerMultiplyKernel(a22, b21, result21);
+				});
+				parallelDivideAndConquerMultiplyKernel(a21, b12, result22);
+				parallelDivideAndConquerMultiplyKernel(a22, b22, result22);
+			});
 		}
 	}
 
