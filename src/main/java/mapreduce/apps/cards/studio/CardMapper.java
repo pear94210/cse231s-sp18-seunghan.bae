@@ -38,6 +38,11 @@ import net.jcip.annotations.Immutable;
 public class CardMapper implements Mapper<Deck, Suit, Integer> {
 	@Override
 	public void map(Deck deck, BiConsumer<Suit, Integer> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		for (Card card : deck) {
+			if (card.getRank().isNumeric()) {
+				keyValuePairConsumer.accept(card.getSuit(), card.getRank().getNumericValue());
+			}
+		}
+		return;
 	}
 }

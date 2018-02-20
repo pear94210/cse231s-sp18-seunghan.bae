@@ -59,7 +59,14 @@ public class WordCountMapper implements Mapper<TextSection, String, Integer> {
 	 */
 	@Override
 	public void map(TextSection textSection, BiConsumer<String, Integer> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		String[] words = textSection.getWords();
+		for (String word : words) {
+			if (word.length() > 0) {
+				word = word.toLowerCase();
+				keyValuePairConsumer.accept(word, 1);
+			}
+		}
+		return;
 	}
 
 }

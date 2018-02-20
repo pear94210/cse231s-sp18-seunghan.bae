@@ -42,7 +42,10 @@ public class KMerMapper implements Mapper<byte[], String, Integer> {
 
 	@Override
 	public void map(byte[] sequence, BiConsumer<String, Integer> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		for (int i = 0; i <= sequence.length - this.kMerLength; i++) {
+			String kmerStr = toStringKMer(sequence, i, this.kMerLength);
+			keyValuePairConsumer.accept(kmerStr, 1);
+		}
 	}
 
 	/**
