@@ -44,7 +44,7 @@ import mapreduce.framework.core.Mapper;
  * 
  * Review the slides for more information.
  * 
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Finn Voichick
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
