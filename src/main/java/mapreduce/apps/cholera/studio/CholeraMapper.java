@@ -30,7 +30,7 @@ import mapreduce.framework.core.Mapper;
 import net.jcip.annotations.Immutable;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @Immutable
