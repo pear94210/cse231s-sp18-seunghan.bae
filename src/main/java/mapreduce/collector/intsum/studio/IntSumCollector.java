@@ -22,6 +22,8 @@
 package mapreduce.collector.intsum.studio;
 
 import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -41,22 +43,51 @@ import edu.wustl.cse231s.NotYetImplementedException;
 public class IntSumCollector implements Collector<Integer, MutableInt, Integer> {
 	@Override
 	public Supplier<MutableInt> supplier() {
-		throw new NotYetImplementedException();
+		return new Supplier<MutableInt>() {
+			
+			@Override
+			public MutableInt get() {
+				return new MutableInt();
+			}
+
+		};
 	}
 
 	@Override
 	public BiConsumer<MutableInt, Integer> accumulator() {
-		throw new NotYetImplementedException();
+		return new BiConsumer<MutableInt, Integer>() {
+
+			@Override
+			public void accept(MutableInt m, Integer i) {
+				m.add(i);
+			}
+
+		};
 	}
 
 	@Override
 	public BinaryOperator<MutableInt> combiner() {
-		throw new NotYetImplementedException();
+		return new BinaryOperator<MutableInt>() {
+
+			@Override
+			public MutableInt apply(MutableInt a, MutableInt b) {
+				a.add(b);
+				return a;
+			}
+
+		};
 	}
 
 	@Override
 	public Function<MutableInt, Integer> finisher() {
-		throw new NotYetImplementedException();
+		return new Function<MutableInt, Integer>() {
+		
+			@Override
+			public Integer apply(MutableInt m) {
+				return m.getValue();
+			}
+			
+		};
 	}
 
 	@Override
