@@ -61,6 +61,9 @@ public class MutualFriendsMapper implements Mapper<Account, OrderedPair<AccountI
 	 */
 	@Override
 	public void map(Account account, BiConsumer<OrderedPair<AccountId>, Set<AccountId>> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		for (AccountId id : account.getFriendIds()) {
+			keyValuePairConsumer.accept(new OrderedPair<AccountId>(account.getId(), id), account.getFriendIds());
+		}
+		return;
 	}
 }
