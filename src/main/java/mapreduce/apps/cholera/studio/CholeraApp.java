@@ -38,7 +38,7 @@ import mapreduce.collector.intsum.studio.IntSumCollector;
 import mapreduce.framework.core.Mapper;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class CholeraApp {
