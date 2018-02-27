@@ -51,21 +51,30 @@ public class WordCountConcreteStaticMapReduce {
 	 * {@link WordCountMapper#map(TextSection, BiConsumer)};
 	 */
 	static void map(TextSection textSection, BiConsumer<String, Integer> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		String[] words = textSection.getWords();
+		for (String s : words) {
+			if (s.length() > 0)
+			{
+				s = s.toLowerCase();
+				keyValuePairConsumer.accept(s, 1);
+			}
+		}
+		return;
 	}
 
 	/**
 	 * {@link ClassicReducer#supplier()};
 	 */
 	static List<Integer> reduceCreateList() {
-		throw new NotYetImplementedException();
+		return new LinkedList<Integer>();
 	}
 
 	/**
 	 * {@link ClassicReducer#accumulator()};
 	 */
 	static void reduceAccumulate(List<Integer> list, int v) {
-		throw new NotYetImplementedException();
+		list.add(v);
+		return;
 	}
 
 	/**
@@ -74,14 +83,19 @@ public class WordCountConcreteStaticMapReduce {
 	 * {@link ClassicReducer#combiner()};
 	 */
 	static void reduceCombine(List<Integer> a, List<Integer> b) {
-		throw new NotYetImplementedException();
+		a.addAll(b);
+		return;
 	}
 
 	/**
 	 * {@link IntegerSumClassicReducer#finisher()};
 	 */
 	static int reduceFinish(List<Integer> list) {
-		throw new NotYetImplementedException();
+		int sum = 0;
+		for (int i : list) {
+			sum += i;
+		}
+		return sum;
 	}
 
 	/**
@@ -89,14 +103,36 @@ public class WordCountConcreteStaticMapReduce {
 	 */
 	static List<KeyValuePair<String, Integer>>[] mapAll(TextSection[] input)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		List<KeyValuePair<String, Integer>>[] list = new List[input.length];
+		forall(0, input.length, (i) -> {
+			List<KeyValuePair<String, Integer>> lkvp = new ArrayList<KeyValuePair<String, Integer>>();
+			String[] words = input[i].getWords();
+			for (String w : words) {
+				if (w.length() > 0) {
+					w = w.toLowerCase();
+					lkvp.add(new KeyValuePair<String, Integer>(w, 1));
+				}
+			}
+			list[i] = lkvp;
+		});
+		return list;
 	}
 
 	/**
 	 * {@link SimpleMapReduceFramework#accumulateAll(List<KeyValuePair<K,V>[])};
 	 */
 	static Map<String, List<Integer>> accumulateAll(List<KeyValuePair<String, Integer>>[] mapAllResults) {
-		throw new NotYetImplementedException();
+		Map<String, List<Integer>> map = new ConcurrentHashMap<String, List<Integer>>();
+		for (int i = 0; i < mapAllResults.length; i++) {
+			for (KeyValuePair<String, Integer> pair : mapAllResults[i]) {
+				if (!map.containsKey(pair.getKey())) {
+					map.put(pair.getKey(), new LinkedList<Integer>());
+				}
+			}
+		}
+		// TODO
+		return map;
 	}
 
 	/**
@@ -104,7 +140,9 @@ public class WordCountConcreteStaticMapReduce {
 	 */
 	static Map<String, Integer> finishAll(Map<String, List<Integer>> accumulateAllResult)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
+		// TODO
+		return map;
 	}
 
 	public static Map<String, Integer> mapReduce(TextSection[] input) throws InterruptedException, ExecutionException {
