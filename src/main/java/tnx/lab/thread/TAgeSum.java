@@ -59,7 +59,9 @@ public class TAgeSum {
 			for (int i = 0; i < mid; i++) subSums[0] += ages[i];
 		});
 		lowerSum.start();
-		for (int j = mid; j < ages.length; j++) subSums[1] += ages[j];
+		for (int j = mid; j < ages.length; j++) {
+			subSums[1] += ages[j];
+		}
 		lowerSum.join();
 		
 		return subSums[0] + subSums[1];
