@@ -23,6 +23,7 @@ package mapreduce.framework.warmup.friends;
 
 import static edu.wustl.cse231s.v5.V5.forall;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,21 +55,25 @@ public class MutualFriendsConcreteStaticMapReduce {
 	 * {@link MutualFriendsMapper#map(Account, BiConsumer)};
 	 */
 	static void map(Account account, BiConsumer<OrderedPair<AccountId>, Set<AccountId>> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		for (AccountId id : account.getFriendIds()) {
+			keyValuePairConsumer.accept(new OrderedPair<AccountId>(account.getId(), id), account.getFriendIds());
+		}
+		return;
 	}
 
 	/**
 	 * {@link ClassicReducer#supplier()};
 	 */
 	static List<Set<AccountId>> reduceCreateList() {
-		throw new NotYetImplementedException();
+		return new LinkedList<Set<AccountId>>();
 	}
 
 	/**
 	 * {@link ClassicReducer#accumulator()};
 	 */
 	static void reduceAccumulate(List<Set<AccountId>> list, Set<AccountId> v) {
-		throw new NotYetImplementedException();
+		list.add(v);
+		return;
 	}
 
 	/**
@@ -77,7 +82,8 @@ public class MutualFriendsConcreteStaticMapReduce {
 	 * {@link ClassicReducer#combiner()};
 	 */
 	static void reduceCombine(List<Set<AccountId>> a, List<Set<AccountId>> b) {
-		throw new NotYetImplementedException();
+		a.addAll(b);
+		return;
 	}
 
 	/**
@@ -87,7 +93,10 @@ public class MutualFriendsConcreteStaticMapReduce {
 		Set<AccountId> universe = null; // imagine this being a set of a billion
 										// account ids
 		MutualFriendIds result = MutualFriendIds.createInitializedToUniverse(universe);
-		throw new NotYetImplementedException();
+		for (Set<AccountId> set : list) {
+			result.intersectWith(set);
+		}
+		return result;
 	}
 
 	/**
@@ -95,7 +104,16 @@ public class MutualFriendsConcreteStaticMapReduce {
 	 */
 	static List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>[] mapAll(Account[] input)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>[] list = new List[input.length];
+		forall(0, input.length, (i) -> {
+			List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>> lkvp = new ArrayList<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>();
+			for (AccountId id : input[i].getFriendIds()) {
+				
+				lkvp.add(new KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>(new OrderedPair<AccountId>(input[i].getId(), id), input[i].getFriendIds()));
+			}
+			list[i] = lkvp;
+		});
+		return list;
 	}
 
 	/**
@@ -103,7 +121,24 @@ public class MutualFriendsConcreteStaticMapReduce {
 	 */
 	static Map<OrderedPair<AccountId>, List<Set<AccountId>>> accumulateAll(
 			List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>[] mapAllResults) {
-		throw new NotYetImplementedException();
+		Map<OrderedPair<AccountId>, List<Set<AccountId>>> map = new ConcurrentHashMap<OrderedPair<AccountId>, List<Set<AccountId>>>();
+		for (int i = 0; i < mapAllResults.length; i++) {
+			for (KeyValuePair<OrderedPair<AccountId>, Set<AccountId>> pair : mapAllResults[i]) {
+				if (!map.containsKey(pair.getKey())) {
+					map.put(pair.getKey(), new LinkedList<Set<AccountId>>());
+				}
+			}
+		}
+		for (Entry<OrderedPair<AccountId>, List<Set<AccountId>>> entry : map.entrySet()) {
+			for (int i = 0; i < mapAllResults.length; i++) {
+				for (KeyValuePair<OrderedPair<AccountId>, Set<AccountId>> pair : mapAllResults[i]) {
+					if (pair.getKey().equals(entry.getKey())) {
+						entry.getValue().add(pair.getValue());
+					}
+				}
+			}
+		}
+		return map;
 	}
 
 	/**
@@ -112,7 +147,16 @@ public class MutualFriendsConcreteStaticMapReduce {
 	static Map<OrderedPair<AccountId>, MutualFriendIds> finishAll(
 			Map<OrderedPair<AccountId>, List<Set<AccountId>>> accumulateAllResult)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Map<OrderedPair<AccountId>, MutualFriendIds> map = new ConcurrentHashMap<OrderedPair<AccountId>, MutualFriendIds>();
+		forall (accumulateAllResult.entrySet(), (e) -> {
+			Set<AccountId> universe = null;
+			MutualFriendIds result = MutualFriendIds.createInitializedToUniverse(universe);
+			for (Set<AccountId> set : e.getValue()) {
+				result.intersectWith(set);
+			}
+			map.put(e.getKey(), result);
+		});
+		return map;
 	}
 
 	public static Map<OrderedPair<AccountId>, MutualFriendIds> mapReduce(Account[] input)

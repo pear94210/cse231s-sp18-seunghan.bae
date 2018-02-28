@@ -131,8 +131,15 @@ public class WordCountConcreteStaticMapReduce {
 				}
 			}
 		}
-		// TODO
-		
+		for (Entry<String, List<Integer>> entry : map.entrySet()) {
+			for (int i = 0; i < mapAllResults.length; i++) {
+				for (KeyValuePair<String, Integer> pair : mapAllResults[i]) {
+					if (pair.getKey().equals(entry.getKey())) {
+						entry.getValue().add(pair.getValue());
+					}
+				}
+			}
+		}
 		return map;
 	}
 
@@ -142,7 +149,13 @@ public class WordCountConcreteStaticMapReduce {
 	static Map<String, Integer> finishAll(Map<String, List<Integer>> accumulateAllResult)
 			throws InterruptedException, ExecutionException {
 		Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
-		// TODO
+		forall (accumulateAllResult.entrySet(), (e) -> {
+			int sum = 0;
+			for (int i : e.getValue()) {
+				sum += i;
+			}
+			map.put(e.getKey(), sum);
+		});
 		return map;
 	}
 
