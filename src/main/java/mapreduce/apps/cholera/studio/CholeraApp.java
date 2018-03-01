@@ -43,7 +43,7 @@ import mapreduce.framework.core.Mapper;
  */
 public class CholeraApp {
 	public static CholeraAppValueRepresentation getValueRepresentation() {
-		throw new NotYetImplementedException();
+		return CholeraAppValueRepresentation.HIGH_NUMBERS_SUSPECT;
 	}
 
 	public static Mapper<CholeraDeath, WaterPump, Number> createMapper() {
