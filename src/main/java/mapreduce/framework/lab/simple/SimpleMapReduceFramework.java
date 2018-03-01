@@ -32,13 +32,12 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.util.KeyValuePair;
-import mapreduce.apps.friends.core.AccountId;
-import mapreduce.apps.friends.core.MutualFriendIds;
 import mapreduce.framework.core.MapReduceFramework;
 import mapreduce.framework.core.Mapper;
 import net.jcip.annotations.Immutable;
@@ -115,11 +114,14 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 	 *             ExecutionException
 	 */
 	List<KeyValuePair<K, V>>[] mapAll(E[] input) throws InterruptedException, ExecutionException {
+		@SuppressWarnings("unchecked")
 		List<KeyValuePair<K, V>>[] lists = new List[input.length];
 		forall(0, input.length, (i) -> {
 			List<KeyValuePair<K, V>> list = new LinkedList<KeyValuePair<K, V>>();
-			
-			this.mapper.map(input[i], /*BiConsumer<K, V> KeyValuePairConsumer*/);
+			this.mapper.map(input[i], (k, v) -> {
+				KeyValuePair<K, V> pair = new KeyValuePair<K, V>(k, v);
+				list.add(pair);
+			});
 			lists[i] = list;
 		});
 		return lists;
