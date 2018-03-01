@@ -118,7 +118,7 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 		List<KeyValuePair<K, V>>[] lists = new List[input.length];
 		forall(0, input.length, (i) -> {
 			List<KeyValuePair<K, V>> list = new LinkedList<KeyValuePair<K, V>>();
-
+			
 			this.mapper.map(input[i], /*BiConsumer<K, V> KeyValuePairConsumer*/);
 			lists[i] = list;
 		});

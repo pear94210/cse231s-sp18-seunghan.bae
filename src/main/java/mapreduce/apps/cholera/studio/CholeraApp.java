@@ -47,10 +47,25 @@ public class CholeraApp {
 	}
 
 	public static Mapper<CholeraDeath, WaterPump, Number> createMapper() {
-		throw new NotYetImplementedException();
+		return new Mapper<CholeraDeath, WaterPump, Number>() {
+			@Override
+			public void map(CholeraDeath item, BiConsumer<WaterPump, Number> keyValuePairConsumer) {
+				WaterPump ans = null;
+				double ansDist = Double.MAX_VALUE;
+				for (WaterPump wp : WaterPump.values()) {
+					double dist = wp.getLocation().getDistanceTo(item.getLocation());
+					if (ans == null || dist < ansDist) {
+						ans = wp;
+						ansDist = dist;
+					}
+				}
+				keyValuePairConsumer.accept(ans, 1);
+				return;
+			}
+		};
 	}
 
 	public static Collector<? extends Number, ?, ? extends Number> createCollector() {
-		throw new NotYetImplementedException();
+		return new IntSumCollector();
 	}
 }
