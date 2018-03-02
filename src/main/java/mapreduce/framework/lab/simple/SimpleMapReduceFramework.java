@@ -147,7 +147,19 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 	 * @see Map#computeIfAbsent(Object, java.util.function.Function)
 	 */
 	Map<K, A> accumulateAll(List<KeyValuePair<K, V>>[] mapAllResults) {
-		throw new NotYetImplementedException();
+		Map<K, A> map = new HashMap<K, A>();
+		for (int i = 0; i < mapAllResults.length; i++) {
+			for (KeyValuePair<K, V> pair : mapAllResults[i]) {
+				K key = pair.getKey();
+				if (map.containsKey(pair.getKey())) {
+					this.collector.accumulator().accept(map.get(key), pair.getValue());
+				}
+				else {
+					this.collector.accumulator().accept(this.collector.supplier().get(), pair.getValue());
+				}
+			}
+		}
+		return map;
 	}
 
 	/**
