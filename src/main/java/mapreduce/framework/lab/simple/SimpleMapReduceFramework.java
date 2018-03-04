@@ -23,17 +23,13 @@ package mapreduce.framework.lab.simple;
 
 import static edu.wustl.cse231s.v5.V5.forall;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collector;
 
 import edu.wustl.cse231s.NotYetImplementedException;
