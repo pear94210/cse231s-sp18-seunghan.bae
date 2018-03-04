@@ -151,12 +151,11 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 		for (int i = 0; i < mapAllResults.length; i++) {
 			for (KeyValuePair<K, V> pair : mapAllResults[i]) {
 				K key = pair.getKey();
-				if (map.containsKey(pair.getKey())) {
-					this.collector.accumulator().accept(map.get(key), pair.getValue());
+				V value = pair.getValue();
+				if (!map.containsKey(key)) {
+					map.put(key, this.collector.supplier().get());
 				}
-				else {
-					this.collector.accumulator().accept(this.collector.supplier().get(), pair.getValue());
-				}
+				this.collector.accumulator().accept(map.get(key), value);
 			}
 		}
 		return map;
@@ -176,7 +175,11 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 	 *             ExecutionException
 	 */
 	Map<K, R> finishAll(Map<K, A> accumulateAllResult) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Map<K, R> map = new ConcurrentHashMap<K, R>();
+		forall(accumulateAllResult.entrySet(), (e) -> {
+			map.put(e.getKey(), this.collector.finisher().apply(e.getValue()));
+		});
+		return map;
 	}
 
 	@Override
