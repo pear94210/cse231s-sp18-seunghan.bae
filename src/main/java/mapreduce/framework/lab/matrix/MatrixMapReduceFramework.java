@@ -24,6 +24,7 @@ package mapreduce.framework.lab.matrix;
 import static edu.wustl.cse231s.v5.V5.forall;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +33,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import edu.wustl.cse231s.util.KeyValuePair;
 import edu.wustl.cse231s.util.MultiWrapMap;
 import mapreduce.framework.core.MapReduceFramework;
 import mapreduce.framework.core.Mapper;
@@ -115,7 +117,29 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 *             ExecutionException
 	 */
 	Map<K, A>[][] mapAndAccumulateAll(E[] input) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		Map<K, A>[][] mapMatrix = new Map[this.mapTaskCount][this.reduceTaskCount];
+		List<Slice<E[]>> slices = Slices.createNSlices(input, this.mapTaskCount);
+		forall(0, this.mapTaskCount, (row) -> {
+			Slice<E[]> s = slices.get(row);
+			forall(s.getMinInclusive(), s.getMaxExclusive(), (i) -> {
+				List<KeyValuePair<K, V>> list = new LinkedList<KeyValuePair<K, V>>();
+				this.mapper.map(input[i], (k, v) -> {
+					KeyValuePair<K, V> pair = new KeyValuePair<K, V>(k, v);
+					list.add(pair);
+				});
+				for (KeyValuePair<K, V> pair : list) {
+					K key = pair.getKey();
+					V value = pair.getValue();
+					int col = this.getReduceIndex(key);
+					if (!mapMatrix[row][col].containsKey(key)) {
+						mapMatrix[row][col].put(key, this.collector.supplier().get());
+					}
+					this.collector.accumulator().accept(mapMatrix[row][col].get(key), value);
+				}
+			});
+		});
+		return mapMatrix;
 	}
 
 	/**
