@@ -104,11 +104,11 @@ public class MutualFriendsConcreteStaticMapReduce {
 	 */
 	static List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>[] mapAll(Account[] input)
 			throws InterruptedException, ExecutionException {
+		@SuppressWarnings("unchecked")
 		List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>[] list = new List[input.length];
 		forall(0, input.length, (i) -> {
 			List<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>> lkvp = new ArrayList<KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>>();
 			for (AccountId id : input[i].getFriendIds()) {
-				
 				lkvp.add(new KeyValuePair<OrderedPair<AccountId>, Set<AccountId>>(new OrderedPair<AccountId>(input[i].getId(), id), input[i].getFriendIds()));
 			}
 			list[i] = lkvp;

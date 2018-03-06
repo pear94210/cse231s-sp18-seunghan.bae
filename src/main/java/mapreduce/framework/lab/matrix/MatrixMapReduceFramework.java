@@ -22,6 +22,7 @@
 package mapreduce.framework.lab.matrix;
 
 import static edu.wustl.cse231s.v5.V5.forall;
+import static edu.wustl.cse231s.v5.V5.newDoubleFinishAccumulator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -168,7 +169,14 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 *             ExecutionException
 	 */
 	Map<K, R> combineAndFinishAll(Map<K, A>[][] input) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		Map<K, R>[] mapArray = new Map[this.reduceTaskCount];
+		forall(0, this.reduceTaskCount, (col) -> {
+			for (int row = 0; row < this.mapTaskCount - 1; row++) {
+				this.collector.combiner().apply(input[this.mapTaskCount - 1][col].get(key), input[row][col]);
+			}
+		});		
+		return new MultiWrapMap<K, R>(mapArray);
 	}
 
 	@Override
