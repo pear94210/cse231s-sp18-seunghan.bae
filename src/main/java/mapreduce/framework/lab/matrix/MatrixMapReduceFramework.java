@@ -22,7 +22,6 @@
 package mapreduce.framework.lab.matrix;
 
 import static edu.wustl.cse231s.v5.V5.forall;
-import static edu.wustl.cse231s.v5.V5.newDoubleFinishAccumulator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -170,13 +169,22 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 */
 	Map<K, R> combineAndFinishAll(Map<K, A>[][] input) throws InterruptedException, ExecutionException {
 		@SuppressWarnings("unchecked")
-		Map<K, R>[] mapArray = new Map[this.reduceTaskCount];
-		forall(0, this.reduceTaskCount, (col) -> {
-			for (int row = 0; row < this.mapTaskCount - 1; row++) {
-				this.collector.combiner().apply(input[this.mapTaskCount - 1][col].get(key), input[row][col]);
+		Map<K, R>[] mapR = new Map[this.reduceTaskCount];
+		@SuppressWarnings("unchecked")
+		Map<K, A>[] mapA = new Map[this.reduceTaskCount];
+		forall(0, input[0].length, (col) -> {
+			mapR[col] = new HashMap<K, R>();
+			mapA[col] = new HashMap<K, A>();
+			for (int row = 0; row < input.length; row++) {
+				for (Entry<K, A> e : input[row][col].entrySet()) {
+					this.collector.combiner().apply(mapA[col].get(e.getKey()), e.getValue());
+				}
+			}
+			for (Entry<K, A> e2 : mapA[col].entrySet()) {
+				mapR[col].put(e2.getKey(), this.collector.finisher().apply(e2.getValue()));
 			}
 		});		
-		return new MultiWrapMap<K, R>(mapArray);
+		return new MultiWrapMap<K, R>(mapR);
 	}
 
 	@Override
