@@ -23,6 +23,7 @@ package mapreduce.framework.lab.matrix;
 
 import static edu.wustl.cse231s.v5.V5.forall;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,10 +120,16 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	Map<K, A>[][] mapAndAccumulateAll(E[] input) throws InterruptedException, ExecutionException {
 		@SuppressWarnings("unchecked")
 		Map<K, A>[][] mapMatrix = new Map[this.mapTaskCount][this.reduceTaskCount];
+		forall(0, this.mapTaskCount, (r) -> {
+			forall(0, this.reduceTaskCount, (c) -> {
+				mapMatrix[r][c] = new HashMap<K, A>();
+			});
+		});
 		List<Slice<E[]>> slices = Slices.createNSlices(input, this.mapTaskCount);
-		forall(0, this.mapTaskCount, (row) -> {
+		forall(0, slices.size(), (row) -> {
 			Slice<E[]> s = slices.get(row);
-			forall(s.getMinInclusive(), s.getMaxExclusive(), (i) -> {
+			for (int i = s.getMinInclusive(); i < s.getMaxExclusive(); i++) {
+			//forall(s.getMinInclusive(), s.getMaxExclusive(), (i) -> {
 				List<KeyValuePair<K, V>> list = new LinkedList<KeyValuePair<K, V>>();
 				this.mapper.map(input[i], (k, v) -> {
 					KeyValuePair<K, V> pair = new KeyValuePair<K, V>(k, v);
@@ -137,7 +144,8 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 					}
 					this.collector.accumulator().accept(mapMatrix[row][col].get(key), value);
 				}
-			});
+			//});
+			}
 		});
 		return mapMatrix;
 	}
