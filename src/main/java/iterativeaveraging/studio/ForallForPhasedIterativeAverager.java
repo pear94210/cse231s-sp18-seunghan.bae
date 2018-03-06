@@ -40,7 +40,19 @@ public class ForallForPhasedIterativeAverager implements IterativeAverager {
 	@Override
 	public void iterativelyAverage(List<Slice<double[]>> slices, double[] a, double[] b, int iterationCount)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Phaser phaser = new Phaser();
+		phaser.bulkRegister(slices.size());
+		forall(slices, (slice) -> {
+			for (int iteration = 0; iteration < iterationCount; iteration++) {
+				double[] arrayPrev = ((iteration & 1) == 0) ? a : b;
+				double[] arrayNext = ((iteration & 1) == 0) ? b : a;
+				for (int index = slice.getMinInclusive(); index < slice.getMaxExclusive(); index++) {
+					arrayNext[index] = (arrayPrev[index - 1] + arrayPrev[index + 1]) * 0.5;
+				}
+				phaser.arriveAndAwaitAdvance();
+			}
+			phaser.arriveAndDeregister();
+		});
 	}
 
 	@Override

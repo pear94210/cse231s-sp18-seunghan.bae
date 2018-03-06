@@ -44,7 +44,7 @@ public class IterativeAveragingTiming {
 	public static void main(String[] args) throws Exception {
 		final int TASKS_PER_PROCESSOR = 1;
 		final int TASK_COUNT = Runtime.getRuntime().availableProcessors() * TASKS_PER_PROCESSOR;
-		final int INDICES_PER_TASK = 500;
+		final int INDICES_PER_TASK = 2500;
 		final int ARRAY_LENGTH = (TASK_COUNT * INDICES_PER_TASK) + 2;
 
 		final boolean IS_COMMON_POOL_DESIRED = false;
