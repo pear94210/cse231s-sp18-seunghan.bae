@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
@@ -168,23 +169,24 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 *             ExecutionException
 	 */
 	Map<K, R> combineAndFinishAll(Map<K, A>[][] input) throws InterruptedException, ExecutionException {
-		@SuppressWarnings("unchecked")
-		Map<K, R>[] mapR = new Map[this.reduceTaskCount];
-		@SuppressWarnings("unchecked")
-		Map<K, A>[] mapA = new Map[this.reduceTaskCount];
-		forall(0, input[0].length, (col) -> {
-			mapR[col] = new HashMap<K, R>();
-			mapA[col] = new HashMap<K, A>();
-			for (int row = 0; row < input.length; row++) {
+		Map<K, R> map = new ConcurrentHashMap<K, R>();
+		forall (0, this.reduceTaskCount, (col) -> {
+			Map<K, A> comboMap = new HashMap<K, A>();
+			for (int row = 0; row < this.mapTaskCount; row++) {
 				for (Entry<K, A> e : input[row][col].entrySet()) {
-					this.collector.combiner().apply(mapA[col].get(e.getKey()), e.getValue());
+					if (!comboMap.containsKey(e.getKey())) {
+						comboMap.put(e.getKey(), e.getValue());
+					}
+					else {
+						this.collector.combiner().apply(comboMap.get(e.getKey()), e.getValue());
+					}
 				}
 			}
-			for (Entry<K, A> e2 : mapA[col].entrySet()) {
-				mapR[col].put(e2.getKey(), this.collector.finisher().apply(e2.getValue()));
-			}
-		});		
-		return new MultiWrapMap<K, R>(mapR);
+			forall(comboMap.entrySet(), (e) -> {
+				map.put(e.getKey(), this.collector.finisher().apply(e.getValue()));
+			});
+		});
+		return map;
 	}
 
 	@Override
