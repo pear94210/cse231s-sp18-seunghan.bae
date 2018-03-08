@@ -29,7 +29,7 @@ import leggedrace.core.LeggedRace;
 import leggedrace.core.Participant;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class SequentialLeggedRace implements LeggedRace {
