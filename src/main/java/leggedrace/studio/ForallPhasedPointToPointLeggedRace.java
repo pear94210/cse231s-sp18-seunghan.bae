@@ -42,7 +42,18 @@ public class ForallPhasedPointToPointLeggedRace implements LeggedRace {
 	 */
 	@Override
 	public void takeSteps(Participant[] participants, int stepCount) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Phaser[] phasers = new Phaser[participants.length];
+		for (int phaser = 0; phaser < phasers.length; phaser++) {
+			phasers[phaser] = new Phaser();
+			phasers[phaser].register();
+		}
+		forall(0, participants.length, (p) -> {
+			for (int i = 0; i < stepCount; i++) {
+				participants[p].takeStep(i);
+				phasers[p].arrive();
+				phasers[getPartnerIndex(p)].awaitAdvance(i);
+			}
+		});
 	}
 
 	/**

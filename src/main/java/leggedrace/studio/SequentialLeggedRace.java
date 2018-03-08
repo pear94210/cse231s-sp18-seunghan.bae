@@ -38,6 +38,11 @@ public class SequentialLeggedRace implements LeggedRace {
 	 */
 	@Override
 	public void takeSteps(Participant[] participants, int stepCount) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		for (int i = 0; i < stepCount; i++) {
+			for (Participant p : participants) {
+				p.takeStep(i);
+			}
+		}
+		return;
 	}
 }
