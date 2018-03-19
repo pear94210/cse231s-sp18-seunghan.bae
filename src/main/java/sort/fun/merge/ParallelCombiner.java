@@ -62,35 +62,44 @@ public class ParallelCombiner implements Combiner {
 
 	private void parallelCombine(int bufferIndex, int[] data, int aMin, int aMaxExclusive, int bMin, int bMaxExclusive)
 			throws InterruptedException, ExecutionException {
-		/*boolean aIsLonger = (aMaxExclusive - aMin) >= (bMaxExclusive - bMin);
-		if (aIsLonger) {
-			if (aMaxExclusive - aMin < this.threshold) {
-				sequentialCombine(bufferIndex, data, aMin, aMaxExclusive, bMin, bMaxExclusive);
-			}
-			else {
+		int aLength = aMaxExclusive - aMin;
+		int bLength = bMaxExclusive - bMin;
+		if (aLength + bLength <= threshold) sequentialCombine(bufferIndex, data, aMin, aMaxExclusive, bMin, bMaxExclusive);
+		else {
+			boolean aIsLonger = (aMaxExclusive - aMin) >= (bMaxExclusive - bMin);
+			if (aIsLonger) {
 				int aMid = MidpointUtils.calculateMidpoint(aMin, aMaxExclusive);
 				int bLoc = binarySearch(data, bMin, bMaxExclusive, aMid);
-				//async(() -> parallelCombine(bufferIndex, ));
+				finish(() -> {
+					async(() -> {
+						parallelCombine(bufferIndex, data, aMin, aMid, bMin, bLoc);
+					});
+					parallelCombine(bufferIndex, data, aMid, aMaxExclusive, bLoc, bMaxExclusive);
+				});
+			}
+			else {
+				int bMid = MidpointUtils.calculateMidpoint(bMin, bMaxExclusive);
+				int aLoc = binarySearch(data, aMin, aMaxExclusive, bMid);
+				finish(() -> {
+					async(() -> {
+						parallelCombine(bufferIndex, data, aMin, aLoc, bMin, bMid);
+					});
+					parallelCombine(bufferIndex, data, aLoc, aMaxExclusive, bMid, bMaxExclusive);
+				});
 			}
 		}
-		else {
-			
-		}*/
-		throw new NotYetImplementedException();
 	}
 	
 	private int binarySearch(int[] data, int min, int maxExclusive, int index) {
-		int pivot = MidpointUtils.calculateMidpoint(min, maxExclusive);
-		if (data[index] < data[min]) return 0;
-		else if (data[index] >= data[maxExclusive - 1]) return maxExclusive - min;
+		if (maxExclusive - min <= 3) {
+			if (data[index] <= data[min]) return min;
+			else if (data[index] > data[maxExclusive - 1]) return maxExclusive;
+			else return MidpointUtils.calculateMidpoint(min, maxExclusive - 1);
+		}
 		else {
-			if ((data[index] < data[pivot]) && (data[index] < data[pivot + 1])) {
-				return binarySearch(data, min, pivot + 1, index);
-			}
-			else if ((data[index] >= data[pivot]) && (data[index] >= data[pivot + 1])) {
-				return binarySearch(data, pivot + 1, maxExclusive, index);
-			}
-			else return pivot - min + 1;
+			int mid = MidpointUtils.calculateMidpoint(min, maxExclusive);
+			if (data[index] <= data[mid]) return binarySearch(data, min, mid, index);
+			else return binarySearch(data, mid, maxExclusive, index);
 		}
 	}
 
