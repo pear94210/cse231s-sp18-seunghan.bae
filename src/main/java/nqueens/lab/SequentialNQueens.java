@@ -62,7 +62,7 @@ public class SequentialNQueens {
 	private static void placeQueenInRow(MutableInt count, MutableQueenLocations queenLocations, int row) {
 		doWork(1);
 		// TODO implement placeQueenInRow
-			throw new NotYetImplementedException();
+		throw new NotYetImplementedException();
 	}
 
 	public static int countSolutions(MutableQueenLocations queenLocations) {
