@@ -84,7 +84,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	@Override
 	public DefaultImmutableQueenLocations createNext(int column) {
 		// TODO implement createNext
-			throw new NotYetImplementedException();
+		return new DefaultImmutableQueenLocations(this, column);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	@Override
 	public int getColumnOfQueenInRow(int row) {
 		// TODO implement getColumnOfQueenInRow
-			throw new NotYetImplementedException();
+		return this.locations[row];
 	}
 
 	/**
@@ -112,7 +112,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	@Override
 	public int getRowCount() {
 		// TODO implement getRowCount
-			throw new NotYetImplementedException();
+		return this.locations.length;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	@Override
 	public int getBoardSize() {
 		// TODO implement getBoardSize
-			throw new NotYetImplementedException();
+		return this.boardSize;
 	}
 
 	/**
@@ -138,6 +138,6 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	@Override
 	public boolean isNextRowThreatFree(int column) {
 		// TODO implement isNextRowThreatFree
-			throw new NotYetImplementedException();
+		return this.isCandidateThreatFree(this.locations.length, column);
 	}
 }

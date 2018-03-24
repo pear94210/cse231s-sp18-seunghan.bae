@@ -68,7 +68,17 @@ public class ParallelNQueens {
 		// TODO implement parallel placeQueenInRow
 			// Note: implement the unfinished methods in ImmutableQueenLocations
 			// first
-			throw new NotYetImplementedException();
+		if (queenLocations.getRowCount() >= queenLocations.getBoardSize()) {
+			acc.put(1);
+		}
+		else {
+			for (int col = 0; col < queenLocations.getBoardSize(); col++) {
+				if (queenLocations.isNextRowThreatFree(col)) {
+					ImmutableQueenLocations newQueenLocations = queenLocations.createNext(col);
+					placeQueenInRow(acc, newQueenLocations);
+				}
+			}
+		}
 	}
 
 	/**
@@ -83,6 +93,10 @@ public class ParallelNQueens {
 	public static int countSolutions(ImmutableQueenLocations queenLocations)
 			throws InterruptedException, ExecutionException {
 		// TODO implement countSolutions
-			throw new NotYetImplementedException();
+		FinishAccumulator<Integer> acc = newIntegerFinishAccumulator(NumberReductionOperator.SUM);
+		finish(register(acc), () -> {
+			placeQueenInRow(acc, queenLocations);
+		});
+		return acc.get();
 	}
 }
