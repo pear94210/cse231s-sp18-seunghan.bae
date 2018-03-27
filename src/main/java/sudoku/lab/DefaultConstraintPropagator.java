@@ -40,7 +40,7 @@ import sudoku.core.io.PuzzlesResourceUtils;
  * Constraint propagation approach and terminology adopted from
  * <a href="http://norvig.com/sudoku.html">Peter Norvig's essay</a>.
  * 
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @Immutable
