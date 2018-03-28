@@ -48,23 +48,41 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 	@Override
 	public Map<Square, SortedSet<Integer>> createOptionSetsFromGivens(String givens) {
 		int[][] values = PuzzlesResourceUtils.parseGivens(givens);
-		throw new NotYetImplementedException();
+		Map<Square, SortedSet<Integer>> map = new EnumMap<Square, SortedSet<Integer>>(Square.class);
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++) {
+				SortedSet<Integer> sortedSet = new TreeSet<Integer>();
+				sortedSet.add(values[row][col]);
+				map.put(Square.valueOf(row, col), sortedSet);
+			}
+		}
+		return map;
 	}
 
 	public Map<Square, SortedSet<Integer>> createNextOptionSets(Map<Square, SortedSet<Integer>> otherOptionSets,
 			Square square, int value) {
-		throw new NotYetImplementedException();
+		SortedSet<Integer> sortedSet = otherOptionSets.get(square);
+		sortedSet.add(value);
+		otherOptionSets.put(square, sortedSet);
+		return otherOptionSets;
 	}
 
 	/**
 	 * @throws IllegalArgumentException if the given value is not an option for the given square
 	 */
 	private static void assign(Map<Square, SortedSet<Integer>> optionSets, Square square, int value) {
-		throw new NotYetImplementedException();
+		if (optionSets.get(square).contains(value)) {
+			SortedSet<Integer> sortedSet = new TreeSet<Integer>();
+			sortedSet.add(value);
+			optionSets.put(square, sortedSet);
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private static void eliminate(Map<Square, SortedSet<Integer>> optionSets, Square square, int value) {
-		throw new NotYetImplementedException();
+		optionSets.get(square).remove(value);
 	}
 
 	private static SortedSet<Integer> allOptions() {

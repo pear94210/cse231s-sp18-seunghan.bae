@@ -49,7 +49,7 @@ public class FewestOptionsFirstSquareSearchAlgorithm implements SquareSearchAlgo
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				Square square = Square.valueOf(row, col);
-				if (puzzle.getValue(square) == 0) {
+				if (puzzle.getValue(square) == 0 || puzzle.getOptions(square).size() == 0) {
 					int optionLength = puzzle.getOptions(square).size();
 					if (optionLength < ansLength) {
 						ansLength = optionLength;
