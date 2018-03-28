@@ -72,12 +72,12 @@ public class ParallelNQueens {
 			acc.put(1);
 		}
 		else {
-			for (int col = 0; col < queenLocations.getBoardSize(); col++) {
+			forasync(0, queenLocations.getBoardSize(), (col) -> {
 				if (queenLocations.isNextRowThreatFree(col)) {
 					ImmutableQueenLocations newQueenLocations = queenLocations.createNext(col);
 					placeQueenInRow(acc, newQueenLocations);
 				}
-			}
+			});
 		}
 	}
 
