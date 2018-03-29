@@ -108,8 +108,8 @@ public class ParallelSudoku {
 			forasync(puzzle.getOptions(square), (i) -> {
 				ImmutableSudokuPuzzle newPuzzle = puzzle.createNext(square, i);
 				solveKernel(solution, newPuzzle, squareSearchAlgorithm);
+				if (isLaunched()) return;
 			});
-			if (isLaunched()) return;
 		}
 	}
 

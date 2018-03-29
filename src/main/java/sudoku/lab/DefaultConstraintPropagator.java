@@ -21,6 +21,8 @@
  ******************************************************************************/
 package sudoku.lab;
 
+import static edu.wustl.cse231s.v5.V5.forall;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -75,6 +77,15 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 			SortedSet<Integer> sortedSet = new TreeSet<Integer>();
 			sortedSet.add(value);
 			optionSets.put(square, sortedSet);
+			/*for (Square s1 : Units.getBoxUnit(square.getRow(), square.getColumn())) {
+				eliminate(optionSets, s1, value);
+			}
+			for (Square s2 : Units.getColumnUnit(square.getColumn())) {
+				eliminate(optionSets, s2, value);
+			}
+			for (Square s3 : Units.getRowUnit(square.getRow())) {
+				eliminate(optionSets, s3, value);
+			}*/
 		}
 		else {
 			throw new IllegalArgumentException();
@@ -82,7 +93,11 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 	}
 
 	private static void eliminate(Map<Square, SortedSet<Integer>> optionSets, Square square, int value) {
-		optionSets.get(square).remove(value);
+		if (optionSets.get(square).contains(value)) {
+			SortedSet<Integer> sortedSet = optionSets.get(square);
+			sortedSet.remove(value);
+			optionSets.put(square, sortedSet);
+		}
 	}
 
 	private static SortedSet<Integer> allOptions() {

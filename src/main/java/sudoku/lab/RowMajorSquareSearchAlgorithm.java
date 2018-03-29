@@ -47,7 +47,7 @@ public class RowMajorSquareSearchAlgorithm implements SquareSearchAlgorithm {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				Square square = Square.valueOf(row, col);
-				if (puzzle.getValue(square) == 0 || puzzle.getOptions(square).size() == 0) {
+				if (puzzle.getValue(square) == 0 || puzzle.getOptions(square).isEmpty()) {
 					return square;
 				}
 			}
