@@ -42,18 +42,45 @@ public class PeerRemovingConstraintPropagator implements ConstraintPropagator {
 	@Override
 	public Map<Square, SortedSet<Integer>> createOptionSetsFromGivens(String givens) {
 		int[][] values = PuzzlesResourceUtils.parseGivens(givens);
-		throw new NotYetImplementedException();
+		Map<Square, SortedSet<Integer>> map = new EnumMap<Square, SortedSet<Integer>>(Square.class);
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++) {
+					map.put(Square.valueOf(row, col), allOptions());
+			}
+		}
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++) {
+				if (values[row][col] != 0) {
+					associateValueWithSquareAndRemoveFromPeers(map, Square.valueOf(row, col), values[row][col]);
+				}
+			}
+		}
+		return map;
 	}
 
 	@Override
 	public Map<Square, SortedSet<Integer>> createNextOptionSets(Map<Square, SortedSet<Integer>> otherOptionSets,
 			Square square, int value) {
-		throw new NotYetImplementedException();
+		Map<Square, SortedSet<Integer>> map = deepCopyOf(otherOptionSets);
+		associateValueWithSquareAndRemoveFromPeers(map, square, value);
+		return map;
 	}
 
 	private static void associateValueWithSquareAndRemoveFromPeers(Map<Square, SortedSet<Integer>> resultOptionSets,
 			Square square, int value) {
-		throw new NotYetImplementedException();
+		if (resultOptionSets.get(square).contains(value)) {
+			SortedSet<Integer> sortedSet = singleOption(value);
+			resultOptionSets.put(square, sortedSet);
+			
+			for (Square s : square.getPeers()) {
+				if (resultOptionSets.get(s).contains(value)) {
+					resultOptionSets.get(s).remove(value);
+					if (resultOptionSets.get(s).size() == 1) {
+						associateValueWithSquareAndRemoveFromPeers(resultOptionSets, s, resultOptionSets.get(s).first());
+					}
+				}
+			}
+		}
 	}
 
 	private static SortedSet<Integer> singleOption(int value) {

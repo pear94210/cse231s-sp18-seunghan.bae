@@ -63,8 +63,9 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 
 	public Map<Square, SortedSet<Integer>> createNextOptionSets(Map<Square, SortedSet<Integer>> otherOptionSets,
 			Square square, int value) {
-		SortedSet<Integer> sortedSet = otherOptionSets.get(square);
+		SortedSet<Integer> sortedSet = new TreeSet<Integer>();
 		sortedSet.add(value);
+		otherOptionSets.remove(square);
 		otherOptionSets.put(square, sortedSet);
 		return otherOptionSets;
 	}
@@ -77,15 +78,6 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 			SortedSet<Integer> sortedSet = new TreeSet<Integer>();
 			sortedSet.add(value);
 			optionSets.put(square, sortedSet);
-			/*for (Square s1 : Units.getBoxUnit(square.getRow(), square.getColumn())) {
-				eliminate(optionSets, s1, value);
-			}
-			for (Square s2 : Units.getColumnUnit(square.getColumn())) {
-				eliminate(optionSets, s2, value);
-			}
-			for (Square s3 : Units.getRowUnit(square.getRow())) {
-				eliminate(optionSets, s3, value);
-			}*/
 		}
 		else {
 			throw new IllegalArgumentException();

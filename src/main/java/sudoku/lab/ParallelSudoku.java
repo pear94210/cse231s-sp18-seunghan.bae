@@ -100,16 +100,17 @@ public class ParallelSudoku {
 	private static void solveKernel(MutableObject<ImmutableSudokuPuzzle> solution, ImmutableSudokuPuzzle puzzle,
 			SquareSearchAlgorithm squareSearchAlgorithm) throws InterruptedException, ExecutionException {
 		doWork(1);
-		Square square = squareSearchAlgorithm.selectNextUnfilledSquare(puzzle);
-		if (square == null) {
-			solution.setValue(puzzle);
-		}
-		else {
-			forasync(puzzle.getOptions(square), (i) -> {
-				ImmutableSudokuPuzzle newPuzzle = puzzle.createNext(square, i);
-				solveKernel(solution, newPuzzle, squareSearchAlgorithm);
-				if (isLaunched()) return;
-			});
+		if (solution.getValue() == null) {
+			Square square = squareSearchAlgorithm.selectNextUnfilledSquare(puzzle);
+			if (square == null) {
+				solution.setValue(puzzle);
+			}
+			else {
+				forasync(puzzle.getOptions(square), (i) -> {
+					ImmutableSudokuPuzzle newPuzzle = puzzle.createNext(square, i);
+					solveKernel(solution, newPuzzle, squareSearchAlgorithm);
+				});
+			}
 		}
 	}
 

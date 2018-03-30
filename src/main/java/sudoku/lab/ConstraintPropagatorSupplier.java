@@ -34,8 +34,8 @@ import sudoku.core.ConstraintPropagator;
 public class ConstraintPropagatorSupplier implements Supplier<ConstraintPropagator> {
 	@Override
 	public ConstraintPropagator get() {
-		throw new NotYetImplementedException();
-		// return new PeerRemovingConstraintPropagator();
+		//throw new NotYetImplementedException();
+		return new PeerRemovingConstraintPropagator();
 		// or
 		// return new DefaultConstraintPropagator();
 	}
