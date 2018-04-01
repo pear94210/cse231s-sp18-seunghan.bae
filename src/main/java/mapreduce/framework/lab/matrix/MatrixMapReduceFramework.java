@@ -120,11 +120,11 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	Map<K, A>[][] mapAndAccumulateAll(E[] input) throws InterruptedException, ExecutionException {
 		@SuppressWarnings("unchecked")
 		Map<K, A>[][] mapMatrix = new Map[this.mapTaskCount][this.reduceTaskCount];
-		forall(0, this.mapTaskCount, (r) -> {
-			forall(0, this.reduceTaskCount, (c) -> {
+		for (int r = 0; r < this.mapTaskCount; r++) {
+			for (int c = 0; c < this.reduceTaskCount; c++) {
 				mapMatrix[r][c] = new HashMap<K, A>();
-			});
-		});
+			}
+		}
 		List<Slice<E[]>> slices = Slices.createNSlices(input, this.mapTaskCount);
 		forall(0, slices.size(), (row) -> {
 			Slice<E[]> s = slices.get(row);
