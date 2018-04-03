@@ -36,7 +36,7 @@ import pipeline.cake.core.MixedIngredients;
 import pipeline.cake.core.Mixer;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class CakePipeline {
