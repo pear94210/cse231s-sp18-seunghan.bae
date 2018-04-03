@@ -45,6 +45,34 @@ public class CakePipeline {
 		MixedIngredients[] mixedIngredients = new MixedIngredients[cakeCount];
 		BakedCake[] bakedCakes = new BakedCake[cakeCount];
 		IcedCake[] icedCakes = new IcedCake[cakeCount];
-		throw new NotYetImplementedException();
+		
+		Phaser p1 = new Phaser();
+		Phaser p2 = new Phaser();
+		p1.register();
+		p2.register();
+		
+		finish(() -> {
+			async(() -> {
+				for (int i = 0; i < cakeCount; i++) {
+					mixedIngredients[i] = mixer.mix(i);
+					p1.arrive();
+				}
+			});
+			async(() -> {
+				for (int i = 0; i < cakeCount; i++) {
+					p1.awaitAdvance(i);
+					bakedCakes[i] = baker.bake(i, mixedIngredients[i]);
+					p2.arrive();
+				}
+			});
+			async(() -> {
+				for (int i = 0; i < cakeCount; i++) {
+					p2.awaitAdvance(i);
+					icedCakes[i] = icer.ice(i, bakedCakes[i]);
+				}
+			});
+		});
+
+		return icedCakes;
 	}
 }
