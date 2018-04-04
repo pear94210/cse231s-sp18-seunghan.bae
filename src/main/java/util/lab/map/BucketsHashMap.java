@@ -73,11 +73,7 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 * @return the index of the bucket the entry should go into
 	 */
 	private int hash(Object key) {
-		int hash = key.hashCode() % buckets.length;
-		if (hash >= 0) {
-			return hash;
-		}
-		else return hash + buckets.length;
+		return Math.floorMod(key.hashCode(), buckets.length);
 	}
 
 	/**
