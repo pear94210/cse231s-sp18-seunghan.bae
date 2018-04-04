@@ -119,8 +119,8 @@ public class XNucleobaseCounting {
 		}
 		
 		List<Future<Integer>> futures = executor.invokeAll(callables);
-		for (Iterator<Future<Integer>> i = futures.iterator(); i.hasNext(); ) {
-			count += i.next().get();
+		for (Future<Integer> f : futures) {
+			count += f.get();
 		}
 		
 		return count;
