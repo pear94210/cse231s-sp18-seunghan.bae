@@ -75,6 +75,7 @@ import net.jcip.annotations.NotThreadSafe;
 	public void remove() {
 		if (this.removable) {
 			this.prev.setNext(this.curr.getNext());
+			this.curr = this.prev;
 			this.collection.remove(this.curr);
 			this.collection.decrementSize();
 			this.removable = false;
