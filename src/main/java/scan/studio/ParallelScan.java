@@ -38,7 +38,21 @@ import scan.core.Scan;
 public class ParallelScan implements Scan {
 	@Override
 	public int[] sumScan(int[] data) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		ArraysHolder array = new ArraysHolder(data);
+		
+		for (int pow : new PowersOfTwoLessThan(data.length)) {
+			forall(0, data.length, (i) -> {
+				if (i < pow) {
+					array.getDst()[i] = array.getSrc()[i];
+				}
+				else {
+					array.getDst()[i] = array.getSrc()[i - pow] + array.getSrc()[i];
+				}
+			});
+			array.nextSrcAndDst();
+		}
+		
+		return array.getSrc();
 	}
 
 	@Override

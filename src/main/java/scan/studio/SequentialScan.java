@@ -32,7 +32,15 @@ import scan.core.Scan;
 public class SequentialScan implements Scan {
 	@Override
 	public int[] sumScan(int[] data) {
-		throw new NotYetImplementedException();
+		int[] result = new int[data.length];
+		if (data.length > 0) {
+			result[0] = data[0];
+			for (int i = 1; i < data.length; i++) {
+				result[i] = result[i - 1] + data[i];
+			}
+		}
+		
+		return result;
 	}
 	
 	@Override
