@@ -22,9 +22,13 @@
 
 package scan.challenge;
 
+import static edu.wustl.cse231s.v5.V5.forall;
+
 import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import scan.core.ArraysHolder;
+import scan.core.PowersOfTwoLessThan;
 import scan.core.Scan;
 
 /**
@@ -34,7 +38,34 @@ import scan.core.Scan;
 public class WorkEfficientScan implements Scan {
 	@Override
 	public int[] sumScan(int[] data) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		ArraysHolder array = new ArraysHolder(data);
+		
+		for (int pow : new PowersOfTwoLessThan(data.length)) {
+			forall(0, data.length, (i) -> {
+				if ((2 * pow) % (i + 1) == 0) {
+					array.getDst()[i] = array.getSrc()[i] + array.getSrc()[i - pow];
+				}
+				else {
+					array.getDst()[i] = array.getSrc()[i];
+				}
+			});
+			array.nextSrcAndDst();
+		}
+		
+		for (int pow : new PowersOfTwoLessThan(data.length)) {
+			
+			forall(0, data.length, (i) -> {
+				if ((2 * pow) % (i + 1) == 0) {
+					array.getDst()[i] = array.getSrc()[i] + array.getSrc()[i - pow];
+				}
+				else {
+					array.getDst()[i] = array.getSrc()[i];
+				}
+			});
+			array.nextSrcAndDst();
+		}
+		
+		return array.getSrc();
 	}
 
 	@Override
