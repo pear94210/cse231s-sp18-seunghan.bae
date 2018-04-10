@@ -43,7 +43,19 @@ public class StringHashMapKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) {
-		throw new NotYetImplementedException();
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (byte[] sequence : sequences) {
+			for (int i = 0; i < sequence.length - k + 1; i++) {
+				String s = KMerUtils.toString(sequence, i, k);
+				if (map.containsKey(s)) {
+					map.replace(s, map.get(s) + 1);
+				}
+				else {
+					map.put(s, 1);
+				}
+			}
+		}
+		return new MapKMerCount<>(k, map, StringKMerCodec.INSTANCE);
 	}
-
+	
 }
