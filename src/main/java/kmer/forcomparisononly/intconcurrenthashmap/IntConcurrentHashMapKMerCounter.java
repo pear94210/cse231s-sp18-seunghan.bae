@@ -38,7 +38,7 @@ import kmer.lab.util.ThresholdSlices;
 import slice.core.Slice;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Seunghan Bae
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class IntConcurrentHashMapKMerCounter implements KMerCounter {
