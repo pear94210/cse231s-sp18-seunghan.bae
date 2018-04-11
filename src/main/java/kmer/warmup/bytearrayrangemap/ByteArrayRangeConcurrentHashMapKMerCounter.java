@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 import edu.wustl.cse231s.NotYetImplementedException;
 import kmer.core.KMerCount;
 import kmer.core.KMerCounter;
+import kmer.core.KMerUtils;
 import kmer.core.bytearrayrange.ByteArrayRange;
 import kmer.core.codecs.ByteArrayRangeCodec;
 import kmer.core.map.MapKMerCount;
@@ -51,7 +52,21 @@ public class ByteArrayRangeConcurrentHashMapKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Map<ByteArrayRange, Integer> map = new ConcurrentHashMap<ByteArrayRange, Integer>();
+		forall (sequences, (sequence) -> {
+			for (int i = 0; i < sequence.length - k + 1; i++) {
+				ByteArrayRange b = KMerUtils.toByteArrayRange(sequence, i, k);
+				map.compute(b, (ByteArrayRange byteArrayRange, Integer count) -> {
+					if (count == null) {
+						return 1;
+					}
+					else {
+						return count + 1;
+					}
+				});
+			}
+		});
+		return new MapKMerCount(k, map, ByteArrayRangeCodec.INSTANCE);
 	}
 
 }
