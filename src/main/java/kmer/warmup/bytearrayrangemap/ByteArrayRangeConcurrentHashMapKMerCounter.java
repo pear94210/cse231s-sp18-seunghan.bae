@@ -66,6 +66,7 @@ public class ByteArrayRangeConcurrentHashMapKMerCounter implements KMerCounter {
 				});
 			}
 		});
+		
 		return new MapKMerCount(k, map, ByteArrayRangeCodec.INSTANCE);
 	}
 
