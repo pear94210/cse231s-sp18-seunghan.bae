@@ -41,7 +41,8 @@ public class IntArrayKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) {
-		int arrayLength = KMerUtils.toArrayLength(KMerUtils.calculatePossibleKMers(k));
+		long possible = KMerUtils.calculatePossibleKMers(k);
+		int arrayLength = KMerUtils.toArrayLength(possible);
 		//int arrayLength = KMerUtils.calculateSumOfAllKMers(sequences, k);
 		int[] array = new int[arrayLength];
 		int count = 0;

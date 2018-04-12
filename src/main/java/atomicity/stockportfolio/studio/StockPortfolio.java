@@ -47,15 +47,15 @@ public class StockPortfolio {
 	// NOTE: for simplicity we will allow negative values for the number of shares
 	// interpreting it as selling short.
 	private int transfer(String listingSymbol, int deltaShareCount) {
-		Integer oldValue = this.map.get(listingSymbol);
-		Integer newValue;
-		if (oldValue != null) {
-			newValue = oldValue + deltaShareCount; 
-		} else {
-			newValue = deltaShareCount;
-		}
-		this.map.put(listingSymbol, newValue);
-		return newValue;
+		this.map.compute(listingSymbol, (String s, Integer value) -> {
+			if (value != null) {
+				return value + deltaShareCount;
+			}
+			else {
+				return deltaShareCount;
+			}
+		});
+		return this.map.get(listingSymbol);
 	}
 
 	public int numShares(String listingSymbol) {
