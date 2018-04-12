@@ -28,7 +28,9 @@ import java.util.List;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import kmer.core.KMerUtils;
+import midpoint.assignment.MidpointUtils;
 import slice.core.Slice;
+import slice.studio.Slices;
 
 /**
  * @author Seunghan Bae
@@ -57,7 +59,16 @@ public class ThresholdSlices {
 	 */
 	private static void addToCollectionKernel(Collection<Slice<byte[]>> slices, byte[] sequence, int min, int max,
 			int sliceThreshold) {
-		throw new NotYetImplementedException();
+		if (max - min <= sliceThreshold) {
+			Slice<byte[]> slice = new Slice<byte[]>(sequence, -1, min, max);
+			slices.add(slice);
+		}
+		else {
+			int mid = MidpointUtils.calculateMidpoint(min, max);
+			addToCollectionKernel(slices, sequence, min, mid, sliceThreshold);
+			addToCollectionKernel(slices, sequence, mid, max, sliceThreshold);
+			addToCollectionKernel(slices, sequence, max, sequence.length, sliceThreshold);
+		}
 	}
 
 	/**
@@ -77,7 +88,10 @@ public class ThresholdSlices {
 	public static List<Slice<byte[]>> createSlicesBelowThreshold(List<byte[]> sequences, int k,
 			int sliceThreshold) {
 		List<Slice<byte[]>> list = new LinkedList<>();
-		throw new NotYetImplementedException();
+		for (byte[] sequence : sequences) {
+			addToCollectionKernel(list, sequence, 0, sequence.length - k + 1, sliceThreshold);
+		}
+		return list;
 	}
 
 	/**
@@ -95,7 +109,11 @@ public class ThresholdSlices {
 	 * @return a reasonable threshold
 	 */
 	public static int calculateReasonableThreshold(List<byte[]> sequences, int k) {
-		throw new NotYetImplementedException();
+		int sequenceLength = 0;
+		for (byte[] sequence : sequences) {
+			if (sequence.length > sequenceLength) sequenceLength = sequence.length;
+		}
+		return (sequenceLength - k + 1) / 4;
 	}
 
 	public static List<Slice<byte[]>> createSlicesBelowReasonableThreshold(List<byte[]> sequences, int k) {
