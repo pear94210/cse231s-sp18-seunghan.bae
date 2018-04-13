@@ -46,6 +46,13 @@ import slice.core.Slice;
 public class AtomicIntegerArrayKMerCounter implements KMerCounter {
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int arrayLength = KMerUtils.toArrayLength(KMerUtils.calculatePossibleKMers(k));
+		AtomicIntegerArray array = new AtomicIntegerArray(arrayLength);
+		forall (sequences, (sequence) -> {
+			for (int i = 0; i < sequence.length - k + 1; i++) {
+				array.incrementAndGet(KMerUtils.toPackedInt(sequence, i, k));
+			}
+		});
+		return new AtomicIntegerArrayKMerCount(k, array);
 	}
 }
