@@ -42,6 +42,9 @@ import slice.core.Slice;
 public class ConcurrentBucketHashMapKMerCounter implements KMerCounter {
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		ConcurrentBucketHashMap<Long, Integer> map = new ConcurrentBucketHashMap<Long, Integer>(1024);
+		
+
+		return new MapKMerCount(k, null, LongKMerCodec.INSTANCE);
 	}
 }

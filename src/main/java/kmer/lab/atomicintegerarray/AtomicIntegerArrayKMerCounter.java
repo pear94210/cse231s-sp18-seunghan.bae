@@ -48,11 +48,15 @@ public class AtomicIntegerArrayKMerCounter implements KMerCounter {
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
 		int arrayLength = KMerUtils.toArrayLength(KMerUtils.calculatePossibleKMers(k));
 		AtomicIntegerArray array = new AtomicIntegerArray(arrayLength);
-		forall (sequences, (sequence) -> {
-			for (int i = 0; i < sequence.length - k + 1; i++) {
+		
+		List<Slice<byte[]>> slices = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+		forall(slices, (slice) -> {
+			byte[] sequence = slice.getOriginalUnslicedData();
+			for (int i = slice.getMinInclusive(); i < slice.getMaxExclusive(); i++) {
 				array.incrementAndGet(KMerUtils.toPackedInt(sequence, i, k));
 			}
 		});
+		
 		return new AtomicIntegerArrayKMerCount(k, array);
 	}
 }

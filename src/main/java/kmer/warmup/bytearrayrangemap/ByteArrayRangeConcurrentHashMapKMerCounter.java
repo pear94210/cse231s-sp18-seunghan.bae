@@ -53,19 +53,16 @@ public class ByteArrayRangeConcurrentHashMapKMerCounter implements KMerCounter {
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
 		Map<ByteArrayRange, Integer> map = new ConcurrentHashMap<ByteArrayRange, Integer>();
-		forall (sequences, (sequence) -> {
-			for (int i = 0; i < sequence.length - k + 1; i++) {
+		
+		List<Slice<byte[]>> slices = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+		forall(slices, (slice) -> {
+			byte[] sequence = slice.getOriginalUnslicedData();
+			for (int i = slice.getMinInclusive(); i < slice.getMaxExclusive(); i++) {
 				ByteArrayRange b = KMerUtils.toByteArrayRange(sequence, i, k);
-				map.compute(b, (ByteArrayRange byteArrayRange, Integer count) -> {
-					if (count == null) {
-						return 1;
-					}
-					else {
-						return count + 1;
-					}
-				});
+				map.compute(b, (ByteArrayRange byteArrayRange, Integer count) -> (count == null ? 1 : count + 1));
 			}
 		});
+		
 		return new MapKMerCount(k, map, ByteArrayRangeCodec.INSTANCE);
 	}
 

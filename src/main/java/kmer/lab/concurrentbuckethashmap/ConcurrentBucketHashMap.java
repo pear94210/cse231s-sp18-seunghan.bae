@@ -47,11 +47,12 @@ import net.jcip.annotations.ThreadSafe;
 
 	@SuppressWarnings("unchecked")
 	public ConcurrentBucketHashMap(int bucketCount) {
-		throw new NotYetImplementedException();
+		this.buckets = new LinkedList[bucketCount];
+		this.locks = new ReentrantReadWriteLock[bucketCount];
 	}
 
 	private int getIndex(Object key) {
-		throw new NotYetImplementedException();
+		return key.hashCode();
 	}
 
 	private List<Entry<K, V>> getBucket(Object key) {

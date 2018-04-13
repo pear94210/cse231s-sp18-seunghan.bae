@@ -67,7 +67,7 @@ public class ThresholdSlices {
 			int mid = MidpointUtils.calculateMidpoint(min, max);
 			addToCollectionKernel(slices, sequence, min, mid, sliceThreshold);
 			addToCollectionKernel(slices, sequence, mid, max, sliceThreshold);
-			addToCollectionKernel(slices, sequence, max, sequence.length, sliceThreshold);
+			//addToCollectionKernel(slices, sequence, max, sequence.length, sliceThreshold);
 		}
 	}
 

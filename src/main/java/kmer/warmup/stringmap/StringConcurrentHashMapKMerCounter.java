@@ -50,17 +50,13 @@ public class StringConcurrentHashMapKMerCounter implements KMerCounter {
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
 		Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
-		forall (sequences, (sequence) -> {
-			for (int i = 0; i < sequence.length - k + 1; i++) {
+		
+		List<Slice<byte[]>> slices = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+		forall(slices, (slice) -> {
+			byte[] sequence = slice.getOriginalUnslicedData();
+			for (int i = slice.getMinInclusive(); i < slice.getMaxExclusive(); i++) {
 				String s = KMerUtils.toString(sequence, i, k);
-				map.compute(s, (String string, Integer count) -> {
-					if (count == null) {
-						return 1;
-					}
-					else {
-						return count + 1;
-					}
-				});
+				map.compute(s, (String string, Integer count) -> (count == null ? 1 : count + 1));
 			}
 		});
 		return new MapKMerCount<>(k, map, StringKMerCodec.INSTANCE);
