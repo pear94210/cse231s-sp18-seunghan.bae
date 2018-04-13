@@ -44,7 +44,15 @@ public class ConcurrentBucketHashMapKMerCounter implements KMerCounter {
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
 		ConcurrentBucketHashMap<Long, Integer> map = new ConcurrentBucketHashMap<Long, Integer>(1024);
 		
+		List<Slice<byte[]>> slices = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+		forall(slices, (slice) -> {
+			byte[] sequence = slice.getOriginalUnslicedData();
+			for (int i = slice.getMinInclusive(); i < slice.getMaxExclusive(); i++) {
+				Long l = KMerUtils.toPackedLong(sequence, i, k);
+				map.compute(l, (Long num, Integer count) -> (count == null ? 1 : count + 1));
+			}
+		});
 
-		return new MapKMerCount(k, null, LongKMerCodec.INSTANCE);
+		return new MapKMerCount(k, map, LongKMerCodec.INSTANCE);
 	}
 }

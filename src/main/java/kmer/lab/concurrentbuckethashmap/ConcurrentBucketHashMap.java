@@ -49,32 +49,36 @@ import net.jcip.annotations.ThreadSafe;
 	public ConcurrentBucketHashMap(int bucketCount) {
 		this.buckets = new LinkedList[bucketCount];
 		this.locks = new ReentrantReadWriteLock[bucketCount];
+		for (int i = 0; i < bucketCount; i++) {
+			buckets[i] = new LinkedList<Entry<K, V>>();
+			locks[i] = new ReentrantReadWriteLock();
+		}
 	}
 
 	private int getIndex(Object key) {
-		return key.hashCode();
+		return Math.floorDiv(key.hashCode(), 1024);
 	}
 
 	private List<Entry<K, V>> getBucket(Object key) {
-		throw new NotYetImplementedException();
+		return this.buckets[getIndex(key)];
 	}
 
 	private ReadWriteLock getLock(Object key) {
-		throw new NotYetImplementedException();
+		return this.locks[getIndex(key)];
 	}
 
 	private static <K, V> Entry<K, V> getEntry(List<Entry<K, V>> bucket, Object key) {
-		throw new NotYetImplementedException();
+		return bucket.get(bucket.indexOf(key));
 	}
 
 	@Override
 	public V get(Object key) {
-		throw new NotYetImplementedException();
+		return getEntry(getBucket(key), key).getValue();
 	}
 
 	@Override
 	public V put(K key, V value) {
-		throw new NotYetImplementedException();
+		return getEntry(getBucket(key), key).setValue(value);
 	}
 
 	@Override
