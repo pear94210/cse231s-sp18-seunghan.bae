@@ -56,7 +56,7 @@ import net.jcip.annotations.ThreadSafe;
 	}
 
 	private int getIndex(Object key) {
-		return Math.floorDiv(key.hashCode(), 1024);
+		return Math.floorMod(key.hashCode(), 1024);
 	}
 
 	private List<Entry<K, V>> getBucket(Object key) {
@@ -68,22 +68,54 @@ import net.jcip.annotations.ThreadSafe;
 	}
 
 	private static <K, V> Entry<K, V> getEntry(List<Entry<K, V>> bucket, Object key) {
-		return bucket.get(bucket.indexOf(key));
+		Entry<K, V> ans = null;
+		for (Entry<K, V> entry : bucket) {
+			if (entry.getKey().equals(key)) {
+				ans = entry;
+				break;
+			}
+		}
+		return ans;
 	}
 
 	@Override
 	public V get(Object key) {
-		return getEntry(getBucket(key), key).getValue();
+		if (getEntry(getBucket(key), key) ==  null) {
+			return null;
+		}
+		else {
+			return getEntry(getBucket(key), key).getValue();
+		}
 	}
 
 	@Override
 	public V put(K key, V value) {
-		return getEntry(getBucket(key), key).setValue(value);
+		if (getEntry(getBucket(key), key) ==  null) {
+			getBucket(key).add(new KeyMutableValuePair(key, value));
+		}
+		else {
+			getEntry(getBucket(key), key).setValue(value);
+		}
+		return value;
 	}
 
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		throw new NotYetImplementedException();
+		//while (!getLock(key).readLock().tryLock()) {};
+		while (!getLock(key).writeLock().tryLock()) {};
+		
+		Entry<K, V> entry = getEntry(getBucket(key), key);
+		if (entry == null) {
+			remappingFunction.apply(key, null);
+		}
+		else {
+			remappingFunction.apply(key, entry.getValue());
+		}
+		
+		//getLock(key).readLock().unlock();
+		getLock(key).writeLock().unlock();
+		
+		return entry.getValue();
 	}
 
 	@Override
