@@ -101,7 +101,7 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		//while (!getLock(key).readLock().tryLock()) {};
+		while (!getLock(key).readLock().tryLock()) {};
 		while (!getLock(key).writeLock().tryLock()) {};
 		
 		Entry<K, V> entry = getEntry(getBucket(key), key);
@@ -112,8 +112,8 @@ import net.jcip.annotations.ThreadSafe;
 			remappingFunction.apply(key, entry.getValue());
 		}
 		
-		//getLock(key).readLock().unlock();
 		getLock(key).writeLock().unlock();
+		getLock(key).readLock().unlock();
 		
 		return entry.getValue();
 	}
