@@ -59,11 +59,10 @@ public class BankAccountLockOrdering {
 	 * @return result of the transfer
 	 */
 	public static TransferResult transferMoney(Account sender, Account recipient, int amount) {
-		Account first = (sender.getUniqueIdNumber() <= recipient.getUniqueIdNumber()) ? sender : recipient;
-		Account second = (sender.getUniqueIdNumber() <= recipient.getUniqueIdNumber()) ? recipient : sender;
-		
-		synchronized(first) {
-			synchronized(second) {
+		int sId = sender.getUniqueIdNumber();
+		int rId = recipient.getUniqueIdNumber();
+		synchronized(sId <= rId ? sender : recipient) {
+			synchronized(sId < rId ? recipient : sender) {
 				return TransferUtils.checkBalanceAndTransfer(sender, recipient, amount);
 			}
 		}
