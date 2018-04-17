@@ -53,6 +53,6 @@ public class ConcurrentBucketHashMapKMerCounter implements KMerCounter {
 			}
 		});
 
-		return new MapKMerCount(k, map, LongKMerCodec.INSTANCE);
+		return new MapKMerCount<>(k, map, LongKMerCodec.INSTANCE);
 	}
 }
