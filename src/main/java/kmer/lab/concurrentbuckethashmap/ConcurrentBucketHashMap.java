@@ -101,21 +101,14 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		while (!getLock(key).readLock().tryLock()) {};
 		while (!getLock(key).writeLock().tryLock()) {};
 		
 		Entry<K, V> entry = getEntry(getBucket(key), key);
-		if (entry == null) {
-			remappingFunction.apply(key, null);
-		}
-		else {
-			remappingFunction.apply(key, entry.getValue());
-		}
+		V value = remappingFunction.apply(key, (entry == null ? null : entry.getValue()));	
+		put(key, value);
 		
 		getLock(key).writeLock().unlock();
-		getLock(key).readLock().unlock();
-		
-		return entry.getValue();
+		return value;
 	}
 
 	@Override
