@@ -59,7 +59,14 @@ public class BankAccountLockOrdering {
 	 * @return result of the transfer
 	 */
 	public static TransferResult transferMoney(Account sender, Account recipient, int amount) {
-		throw new NotYetImplementedException();
+		Account first = (sender.getUniqueIdNumber() <= recipient.getUniqueIdNumber()) ? sender : recipient;
+		Account second = (sender.getUniqueIdNumber() <= recipient.getUniqueIdNumber()) ? recipient : sender;
+		
+		synchronized(first) {
+			synchronized(second) {
+				return TransferUtils.checkBalanceAndTransfer(sender, recipient, amount);
+			}
+		}
 	}
 
 }
