@@ -80,23 +80,36 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V get(Object key) {
+		while (!getLock(key).readLock().tryLock()) {};
+		
+		V ans = null;
 		if (getEntry(getBucket(key), key) ==  null) {
-			return null;
+			ans = null;
 		}
 		else {
-			return getEntry(getBucket(key), key).getValue();
+			ans = getEntry(getBucket(key), key).getValue();
 		}
+		
+		getLock(key).readLock().unlock();
+		return ans;
 	}
 
 	@Override
 	public V put(K key, V value) {
-		if (getEntry(getBucket(key), key) ==  null) {
+		while (!getLock(key).writeLock().tryLock()) {};
+		
+		V prev = null;
+		Entry<K, V> entry = getEntry(getBucket(key), key);
+		if (entry ==  null) {
 			getBucket(key).add(new KeyMutableValuePair(key, value));
 		}
 		else {
-			getEntry(getBucket(key), key).setValue(value);
+			prev = entry.getValue();
+			entry.setValue(value);
 		}
-		return value;
+		
+		getLock(key).writeLock().unlock();
+		return prev;
 	}
 
 	@Override
