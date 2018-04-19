@@ -59,7 +59,27 @@ public class BankAccountLockTrying {
 	 * @return the result of the attempted transaction
 	 */
 	public static TransferResult tryTransferMoney(AccountWithLock sender, AccountWithLock recipient, int amount) {
-		throw new NotYetImplementedException();
+		if (sender.getLock().tryLock()) {
+			try {
+				if (recipient.getLock().tryLock()) {
+					try {
+						return TransferUtils.checkBalanceAndTransfer(sender, recipient, amount);
+					}
+					finally {
+						recipient.getLock().unlock();
+					}
+				}
+				else {
+					return TransferResult.UNABLE_TO_ATTEMPT_AT_THIS_TIME;
+				}
+			}
+			finally {
+				sender.getLock().unlock();
+			}
+		}
+		else {
+			return TransferResult.UNABLE_TO_ATTEMPT_AT_THIS_TIME;
+		}
 	}
 
 	/**

@@ -41,14 +41,31 @@ public class LockUtils {
 	 * acquired.
 	 */
 	public static boolean tryLockAll(List<ReentrantLock> locks) {
-		throw new NotYetImplementedException();
+		boolean ans = true;
+		ListIterator<ReentrantLock> iter = locks.listIterator();
+		while (iter.hasNext()) {
+			if (!iter.next().tryLock()) {
+				ans = false;
+				iter.previous();
+				while (iter.hasPrevious()) {
+					iter.previous().unlock();
+				}
+				break;
+			}
+		}
+		return ans;
 	}
 
 	/**
 	 * Unlocks all of the specified locks.
 	 */
 	public static void unlockAllHeldLocks(List<ReentrantLock> locks) {
-		throw new NotYetImplementedException();
+		for (ReentrantLock lock : locks) {
+			if (lock.isHeldByCurrentThread()) {
+				lock.unlock();
+			}
+		}
+		return;
 	}
 
 	/**
@@ -58,7 +75,16 @@ public class LockUtils {
 	 * @return whether or not successful
 	 */
 	public static boolean runWithAllLocksOrDontRunAtAll(List<ReentrantLock> locks, Runnable body) {
-		throw new NotYetImplementedException();
+		boolean status = tryLockAll(locks);
+		if (status) {
+			try {
+				body.run();
+			}
+			finally {
+				unlockAllHeldLocks(locks);
+			}
+		}
+		return status;
 	}
 
 	/**
