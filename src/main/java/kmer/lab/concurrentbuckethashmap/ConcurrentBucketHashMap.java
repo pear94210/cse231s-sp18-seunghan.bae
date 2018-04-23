@@ -56,7 +56,7 @@ import net.jcip.annotations.ThreadSafe;
 	}
 
 	private int getIndex(Object key) {
-		return Math.floorMod(key.hashCode(), 1024);
+		return Math.floorMod(key.hashCode(), this.buckets.length);
 	}
 
 	private List<Entry<K, V>> getBucket(Object key) {
@@ -81,47 +81,55 @@ import net.jcip.annotations.ThreadSafe;
 	@Override
 	public V get(Object key) {
 		while (!getLock(key).readLock().tryLock()) {};
-		
-		V ans = null;
-		if (getEntry(getBucket(key), key) ==  null) {
-			ans = null;
+		try {
+			V ans = null;
+			if (getEntry(getBucket(key), key) ==  null) {
+				ans = null;
+			}
+			else {
+				ans = getEntry(getBucket(key), key).getValue();
+			}
+			return ans;
 		}
-		else {
-			ans = getEntry(getBucket(key), key).getValue();
+		finally {
+			getLock(key).readLock().unlock();
 		}
-		
-		getLock(key).readLock().unlock();
-		return ans;
 	}
 
 	@Override
 	public V put(K key, V value) {
 		while (!getLock(key).writeLock().tryLock()) {};
 		
-		V prev = null;
-		Entry<K, V> entry = getEntry(getBucket(key), key);
-		if (entry ==  null) {
-			getBucket(key).add(new KeyMutableValuePair(key, value));
+		try {
+			V prev = null;
+			Entry<K, V> entry = getEntry(getBucket(key), key);
+			if (entry ==  null) {
+				getBucket(key).add(new KeyMutableValuePair(key, value));
+			}
+			else {
+				prev = entry.getValue();
+				entry.setValue(value);
+			}
+			return prev;
 		}
-		else {
-			prev = entry.getValue();
-			entry.setValue(value);
+		finally {
+			getLock(key).writeLock().unlock();
 		}
-		
-		getLock(key).writeLock().unlock();
-		return prev;
 	}
 
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		while (!getLock(key).writeLock().tryLock()) {};
 		
-		Entry<K, V> entry = getEntry(getBucket(key), key);
-		V value = remappingFunction.apply(key, (entry == null ? null : entry.getValue()));	
-		put(key, value);
-		
-		getLock(key).writeLock().unlock();
-		return value;
+		try {
+			Entry<K, V> entry = getEntry(getBucket(key), key);
+			V value = remappingFunction.apply(key, (entry == null ? null : entry.getValue()));	
+			put(key, value);
+			return value;
+		}
+		finally {
+			getLock(key).writeLock().unlock();
+		}
 	}
 
 	@Override
