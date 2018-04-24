@@ -80,7 +80,8 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V get(Object key) {
-		while (!getLock(key).readLock().tryLock()) {};
+		getLock(key).readLock().lock();
+		
 		try {
 			V ans = null;
 			if (getEntry(getBucket(key), key) ==  null) {
@@ -98,7 +99,7 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V put(K key, V value) {
-		while (!getLock(key).writeLock().tryLock()) {};
+		getLock(key).writeLock().lock();
 		
 		try {
 			V prev = null;
@@ -119,7 +120,7 @@ import net.jcip.annotations.ThreadSafe;
 
 	@Override
 	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-		while (!getLock(key).writeLock().tryLock()) {};
+		getLock(key).writeLock().lock();
 		
 		try {
 			Entry<K, V> entry = getEntry(getBucket(key), key);
