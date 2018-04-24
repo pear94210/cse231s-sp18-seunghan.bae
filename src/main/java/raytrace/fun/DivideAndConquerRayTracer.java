@@ -35,6 +35,7 @@ import org.sunflow.image.Color;
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.v5.impl.executor.ExecutorV5Impl;
 import edu.wustl.cse231s.v5.options.SystemPropertiesOption;
+import midpoint.assignment.MidpointUtils;
 import raytrace.core.RayTraceContext;
 import raytrace.core.RayTraceTaskContext;
 import raytrace.core.RayTraceUtils;
@@ -68,7 +69,18 @@ public class DivideAndConquerRayTracer implements RayTracer {
 
 	private void rayTraceKernel(RayTraceContext context, int xMin, int yMin, int xMax, int yMax, int areaThreshold) {
 		// TODO: divide and conquer until you reach areaThreshold
-		throw new NotYetImplementedException();
+		int area = (xMax - xMin) * (yMax - yMin);
+		if (area <= areaThreshold) {
+			renderSection(context, xMin, yMin, xMax, yMax);
+		}
+		else {
+			int xMid = MidpointUtils.calculateMidpoint(xMin, xMax);
+			int yMid = MidpointUtils.calculateMidpoint(yMin, yMax);
+			async(() -> rayTraceKernel(context, xMin, yMin, xMid, yMid, areaThreshold));
+			async(() -> rayTraceKernel(context, xMid, yMin, xMax, yMid, areaThreshold));
+			async(() -> rayTraceKernel(context, xMin, yMid, xMid, yMax, areaThreshold));
+			rayTraceKernel(context, xMid, yMid, xMax, yMax, areaThreshold);
+		}
 	}
 
 	@Override

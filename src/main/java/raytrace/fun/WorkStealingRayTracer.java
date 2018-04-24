@@ -47,8 +47,20 @@ public class WorkStealingRayTracer implements RayTracer {
 	private void renderMyTasksUntilEmptyThenStealWorkFromOthers(RayTraceTaskContext taskContext,
 			List<ConcurrentLinkedDeque<Section>> quadrants, int id) {
 		Color[] colorBuffer = new Color[SECTION_DIMENSION_SIZE * SECTION_DIMENSION_SIZE];
-
-		throw new NotYetImplementedException();
+		
+		ConcurrentLinkedDeque<Section> deque = quadrants.get(id);
+		while (!deque.isEmpty()) {
+			deque.pollLast().render(taskContext, colorBuffer, id);
+		}
+		
+		for (int i = 0; i < quadrants.size(); i++) {
+			if (i != id){
+				ConcurrentLinkedDeque<Section> friend = quadrants.get(i);
+				while (!friend.isEmpty()) {
+					friend.pollFirst().render(taskContext, colorBuffer, id);
+				}
+			}
+		}
 	}
 
 	@Override
