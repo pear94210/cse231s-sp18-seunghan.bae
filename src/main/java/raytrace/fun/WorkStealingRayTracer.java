@@ -54,7 +54,7 @@ public class WorkStealingRayTracer implements RayTracer {
 		}
 		
 		for (int i = 0; i < quadrants.size(); i++) {
-			if (i != id){
+			if (i != id) {
 				ConcurrentLinkedDeque<Section> friend = quadrants.get(i);
 				while (!friend.isEmpty()) {
 					friend.pollFirst().render(taskContext, colorBuffer, id);
